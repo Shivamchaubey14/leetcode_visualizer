@@ -1,0 +1,97 @@
+{% extends 'visualizer/base.html' %}
+
+{% block content %}
+
+<!-- Topbar -->
+<header class="topbar">
+    <div class="topbar-brand">
+        <div class="brand-icon">
+            <i class="ti ti-chart-dots" aria-hidden="true"></i>
+        </div>
+        <div>
+            <div class="brand-name">AlgoScope</div>
+            <div class="brand-tag">Step-by-step visualizer</div>
+        </div>
+    </div>
+    <div class="topbar-center">
+        <span style="font-size:13px;color:rgba(251,245,221,0.7);font-weight:300;">
+            Understand algorithms by watching them run.
+        </span>
+    </div>
+    <div class="topbar-end" style="padding:0 18px;">
+        <span style="font-size:11px;color:rgba(251,245,221,0.45);">
+            {{ problems|length }} problem{{ problems|length|pluralize }} available
+        </span>
+    </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-section-label">Browse Problems</div>
+    <div class="problem-list">
+        {% for problem in problems %}
+        <a href="{% url 'detail' problem.slug %}" class="problem-item">
+            <span class="pi-num">{{ problem.leetcode_id }}</span>
+            <span class="pi-title">{{ problem.title }}</span>
+            <span class="pi-diff {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
+                {{ problem.get_difficulty_display }}
+            </span>
+        </a>
+        {% empty %}
+        <p style="padding:16px;font-size:12px;color:var(--txt3);">No problems yet.</p>
+        {% endfor %}
+    </div>
+    <div class="sidebar-stats">
+        <div class="stat-mini">
+            <div class="stat-n">{{ problems|length }}</div>
+            <div class="stat-l">Total</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-n" style="color:var(--easy-color);">
+                {{ problems|dictsortreversed:"difficulty"|length }}
+            </div>
+            <div class="stat-l">Easy</div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main index content -->
+<main class="main-content index-content">
+    <div class="page-hero">
+        <h1>Choose a Problem to Visualize</h1>
+        <p>Select any problem to see a line-by-line walkthrough of the solution with variable tracking and array state.</p>
+    </div>
+
+    <div class="problems-grid">
+        {% for problem in problems %}
+        <a href="{% url 'detail' problem.slug %}"
+           class="problem-card {% if problem.difficulty == 'easy' %}easy-card{% elif problem.difficulty == 'medium' %}med-card{% else %}hard-card{% endif %}">
+            <span class="pc-num">{{ problem.leetcode_id }}</span>
+            <div class="pc-info">
+                <div class="pc-title">{{ problem.title }}</div>
+                <div class="pc-cat">{{ problem.get_category_display }}</div>
+            </div>
+            <span class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
+                {{ problem.get_difficulty_display }}
+            </span>
+            <i class="ti ti-chevron-right" style="font-size:16px;color:var(--txt3);" aria-hidden="true"></i>
+        </a>
+        {% empty %}
+        <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;background:var(--surface);border-radius:var(--radius-md);border:1px dashed var(--border);">
+            <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>
+            No problems added yet. Add problems through the admin panel.
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+<!-- Sidebar footer -->
+<div class="sidebar-footer">
+    <i class="ti ti-info-circle" style="font-size:13px;" aria-hidden="true"></i>
+    AlgoScope v1.0
+</div>
+
+<!-- Controls footer (empty for index) -->
+<div style="grid-column:2;grid-row:3;background:var(--surface);border-top:1px solid var(--border);height:44px;"></div>
+
+{% endblock %}
