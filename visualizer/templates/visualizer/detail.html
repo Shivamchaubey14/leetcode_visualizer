@@ -9,11 +9,27 @@
 /* ── Reset & box-sizing ──────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* ── FIX: lock the full page to the viewport ─────────────── */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ── FIX: main-content must fill & not overflow ──────────── */
+.main-content {
+    flex: 1 1 0;
+    min-height: 0;      /* critical: allows flex child to shrink */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 /* ── Layout root ─────────────────────────────────────────── */
 .main-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 100%;
+    flex: 1 1 0;        /* FIX: fill main-content vertically */
+    min-height: 0;      /* FIX: allow grid to shrink */
     overflow: hidden;
 }
 
@@ -40,6 +56,17 @@
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
+    min-height: 0;      /* FIX */
+}
+
+/* FIX: code-area scrolls internally */
+.code-area {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
 }
 
 @media (max-width: 768px) {
@@ -47,6 +74,7 @@
         border-right: none;
         border-bottom: 1px solid var(--border);
         max-height: 38vh;
+        flex-shrink: 0;
     }
     .code-panel.collapsed { max-height: 44px; }
     .code-panel.collapsed .code-area { display: none; }
@@ -59,13 +87,46 @@
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
+    min-height: 0;      /* FIX */
 }
 
 @media (max-width: 768px) {
     .viz-panel { overflow: visible; }
 }
 
+/* ── FIX: viz-scroll is the ONLY scroll region in viz panel  */
+.viz-scroll {
+    flex: 1 1 0;        /* fill remaining height in viz-panel */
+    min-height: 0;      /* critical — without this it expands past parent */
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+}
+
+@media (max-width: 768px) {
+    .viz-scroll {
+        flex: none;
+        min-height: auto;
+        overflow-y: visible;
+    }
+}
+
+/* ── controls: never shrink, always visible ──────────────── */
+.controls {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    z-index: 10;
+}
+
 /* ── Topbar responsive ───────────────────────────────────── */
+.topbar { flex-shrink: 0; }
+
 @media (max-width: 900px) {
     .topbar-center { gap: 6px; }
     .topbar-cat { display: none; }
@@ -289,6 +350,7 @@
     border-radius: var(--radius-md, 8px);
     overflow: hidden;
     max-width: 100%;
+    flex-shrink: 0;     /* FIX: sections don't squish — scroll container handles overflow */
 }
 
 .viz-section-head {
@@ -318,22 +380,6 @@
     flex-shrink: 0;
 }
 .viz-section-body { padding: 12px; max-width: 100%; }
-
-.viz-scroll {
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--surface3) transparent;
-}
-
-@media (max-width: 768px) {
-    .viz-scroll { overflow-y: visible; }
-}
 
 /* ── Empty state ─────────────────────────────────────────── */
 .empty-hint {
