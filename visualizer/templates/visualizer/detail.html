@@ -1,103 +1,114 @@
-{% extends 'visualizer/base.html' %}
-
-{% block extra_css %}
+{% extends 'visualizer/base.html' %} {% block extra_css %}
 <style>
-/* ═══════════════════════════════════════════════════════════
+  /* ═══════════════════════════════════════════════════════════
    ALGOSCOPE – DETAIL PAGE  |  Full responsive refactor
    ═══════════════════════════════════════════════════════════ */
 
-/* ── Reset & box-sizing ──────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+  /* ── Reset & box-sizing ──────────────────────────────────── */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-/* ── FIX: lock the full page to the viewport ─────────────── */
-html, body {
+  /* ── FIX: lock the full page to the viewport ─────────────── */
+  html,
+  body {
     height: 100%;
     overflow: hidden;
-}
+  }
 
-/* ── FIX: main-content must fill & not overflow ──────────── */
-.main-content {
+  /* ── FIX: main-content must fill & not overflow ──────────── */
+  .main-content {
     flex: 1 1 0;
-    min-height: 0;      /* critical: allows flex child to shrink */
+    min-height: 0; /* critical: allows flex child to shrink */
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
+  }
 
-/* ── Layout root ─────────────────────────────────────────── */
-.main-split {
+  /* ── Layout root ─────────────────────────────────────────── */
+  .main-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    flex: 1 1 0;        /* FIX: fill main-content vertically */
-    min-height: 0;      /* FIX: allow grid to shrink */
+    flex: 1 1 0; /* FIX: fill main-content vertically */
+    min-height: 0; /* FIX: allow grid to shrink */
     overflow: hidden;
-}
+  }
 
-/* Tablet: slightly skewed ratio */
-@media (max-width: 1200px) and (min-width: 769px) {
-    .main-split { grid-template-columns: 1.25fr 0.75fr; }
-}
-
-/* Mobile: single column */
-@media (max-width: 768px) {
+  /* Tablet: slightly skewed ratio */
+  @media (max-width: 1200px) and (min-width: 769px) {
     .main-split {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-        height: auto;
-        overflow: visible;
+      grid-template-columns: 1.25fr 0.75fr;
     }
-}
+  }
 
-/* ── Code panel ──────────────────────────────────────────── */
-.code-panel {
+  /* Mobile: single column */
+  @media (max-width: 768px) {
+    .main-split {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      height: auto;
+      overflow: visible;
+    }
+  }
+
+  /* ── Code panel ──────────────────────────────────────────── */
+  .code-panel {
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
-    min-height: 0;      /* FIX */
-}
+    min-height: 0; /* FIX */
+  }
 
-/* FIX: code-area scrolls internally */
-.code-area {
+  /* FIX: code-area scrolls internally */
+  .code-area {
     flex: 1 1 0;
     min-height: 0;
     overflow-y: auto;
     overflow-x: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--surface3) transparent;
-}
+  }
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
     .code-panel {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        max-height: 38vh;
-        flex-shrink: 0;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 38vh;
+      flex-shrink: 0;
     }
-    .code-panel.collapsed { max-height: 44px; }
-    .code-panel.collapsed .code-area { display: none; }
-}
+    .code-panel.collapsed {
+      max-height: 44px;
+    }
+    .code-panel.collapsed .code-area {
+      display: none;
+    }
+  }
 
-/* ── Viz panel ───────────────────────────────────────────── */
-.viz-panel {
+  /* ── Viz panel ───────────────────────────────────────────── */
+  .viz-panel {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
-    min-height: 0;      /* FIX */
-}
+    min-height: 0; /* FIX */
+  }
 
-@media (max-width: 768px) {
-    .viz-panel { overflow: visible; }
-}
+  @media (max-width: 768px) {
+    .viz-panel {
+      overflow: visible;
+    }
+  }
 
-/* ── FIX: viz-scroll is the ONLY scroll region in viz panel  */
-.viz-scroll {
-    flex: 1 1 0;        /* fill remaining height in viz-panel */
-    min-height: 0;      /* critical — without this it expands past parent */
+  /* ── FIX: viz-scroll is the ONLY scroll region in viz panel  */
+  .viz-scroll {
+    flex: 1 1 0; /* fill remaining height in viz-panel */
+    min-height: 0; /* critical — without this it expands past parent */
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
@@ -106,59 +117,73 @@ html, body {
     padding: 10px;
     scrollbar-width: thin;
     scrollbar-color: var(--surface3) transparent;
-}
+  }
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
     .viz-scroll {
-        flex: none;
-        min-height: auto;
-        overflow-y: visible;
+      flex: none;
+      min-height: auto;
+      overflow-y: visible;
     }
-}
+  }
 
-/* ── controls: never shrink, always visible ──────────────── */
-.controls {
+  /* ── controls: never shrink, always visible ──────────────── */
+  .controls {
     flex-shrink: 0;
     border-top: 1px solid var(--border);
     background: var(--bg);
     z-index: 10;
-}
+  }
 
-/* ── Topbar responsive ───────────────────────────────────── */
-.topbar { flex-shrink: 0; }
+  /* ── Topbar responsive ───────────────────────────────────── */
+  .topbar {
+    flex-shrink: 0;
+  }
 
-@media (max-width: 900px) {
-    .topbar-center { gap: 6px; }
-    .topbar-cat { display: none; }
-}
-
-@media (max-width: 768px) {
-    .topbar {
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 8px 12px;
-        height: auto;
-    }
-    .topbar-brand { flex: 1 1 auto; }
+  @media (max-width: 900px) {
     .topbar-center {
-        order: 3;
-        width: 100%;
-        flex-wrap: wrap;
+      gap: 6px;
+    }
+    .topbar-cat {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .topbar {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px;
+      height: auto;
+    }
+    .topbar-brand {
+      flex: 1 1 auto;
+    }
+    .topbar-center {
+      order: 3;
+      width: 100%;
+      flex-wrap: wrap;
     }
     .topbar-end {
-        order: 4;
-        width: 100%;
+      order: 4;
+      width: 100%;
     }
-    .topbar-input { width: 100%; }
-    .topbar-select { font-size: 12px; max-width: 200px; }
-}
+    .topbar-input {
+      width: 100%;
+    }
+    .topbar-select {
+      font-size: 12px;
+      max-width: 200px;
+    }
+  }
 
-/* ── Hamburger button ────────────────────────────────────── */
-.hamburger-btn {
+  /* ── Hamburger button ────────────────────────────────────── */
+  .hamburger-btn {
     display: none;
     align-items: center;
     justify-content: center;
-    width: 36px; height: 36px;
+    width: 36px;
+    height: 36px;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm, 6px);
     background: var(--surface);
@@ -166,36 +191,43 @@ html, body {
     cursor: pointer;
     font-size: 18px;
     flex-shrink: 0;
-}
-@media (max-width: 768px) { .hamburger-btn { display: flex; } }
+  }
+  @media (max-width: 768px) {
+    .hamburger-btn {
+      display: flex;
+    }
+  }
 
-/* ── Off-canvas sidebar ──────────────────────────────────── */
-@media (max-width: 768px) {
+  /* ── Off-canvas sidebar ──────────────────────────────────── */
+  @media (max-width: 768px) {
     .sidebar {
-        position: fixed;
-        left: -260px;
-        top: 0; bottom: 0;
-        width: 240px;
-        z-index: 1000;
-        transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
-        box-shadow: none;
+      position: fixed;
+      left: -260px;
+      top: 0;
+      bottom: 0;
+      width: 240px;
+      z-index: 1000;
+      transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: none;
     }
     .sidebar.open {
-        left: 0;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+      left: 0;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
     }
     .sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 999;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
     }
-    .sidebar-overlay.visible { display: block; }
-}
+    .sidebar-overlay.visible {
+      display: block;
+    }
+  }
 
-/* ── Collapsible code panel toggle (mobile) ──────────────── */
-.code-toggle {
+  /* ── Collapsible code panel toggle (mobile) ──────────────── */
+  .code-toggle {
     display: none;
     align-items: center;
     gap: 6px;
@@ -206,83 +238,101 @@ html, body {
     background: none;
     border: none;
     padding: 0;
-    font-family: 'DM Mono', monospace;
-}
-@media (max-width: 768px) { .code-toggle { display: flex; } }
+    font-family: "DM Mono", monospace;
+  }
+  @media (max-width: 768px) {
+    .code-toggle {
+      display: flex;
+    }
+  }
 
-/* ── Array visualization ─────────────────────────────────── */
-.array-visual {
+  /* ── Array visualization ─────────────────────────────────── */
+  .array-visual {
     overflow-x: auto;
     overflow-y: visible;
     max-width: 100%;
     scrollbar-width: thin;
     scrollbar-color: var(--surface3) transparent;
-}
+  }
 
-.array-cell {
+  .array-cell {
     min-width: 45px;
     max-width: 70px;
     flex: 0 0 auto;
     box-sizing: border-box;
-}
+  }
 
-@media (max-width: 768px) {
-    .array-cell { min-width: 36px; max-width: 54px; font-size: 11px; }
-}
+  @media (max-width: 768px) {
+    .array-cell {
+      min-width: 36px;
+      max-width: 54px;
+      font-size: 11px;
+    }
+  }
 
-/* ── Variables grid ──────────────────────────────────────── */
-.vars-grid {
+  /* ── Variables grid ──────────────────────────────────────── */
+  .vars-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     max-width: 100%;
-}
+  }
 
-@media (max-width: 768px) {
-    .vars-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-}
+  @media (max-width: 768px) {
+    .vars-grid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+  }
 
-.var-card { max-width: 100%; overflow: hidden; }
-.var-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-.var-value {
+  .var-card {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .var-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .var-value {
     word-break: break-all;
     max-height: 72px;
     overflow-y: auto;
     max-width: 100%;
-}
+  }
 
-/* ── Call stack overflow fix ─────────────────────────────── */
-.stack-frame {
+  /* ── Call stack overflow fix ─────────────────────────────── */
+  .stack-frame {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     min-width: 0;
-}
-.stack-fn-name {
+  }
+  .stack-fn-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 180px;
     flex: 1 1 auto;
     min-width: 0;
-}
-@media (max-width: 768px) {
+  }
+  @media (max-width: 768px) {
     .stack-fn-name {
-        white-space: normal;
-        word-break: break-word;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 100%;
     }
-}
+  }
 
-/* ── Topbar file tag ─────────────────────────────────────── */
-.topbar-file-tag {
+  /* ── Topbar file tag ─────────────────────────────────────── */
+  .topbar-file-tag {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-family: 'DM Mono', monospace;
+    font-family: "DM Mono", monospace;
     font-size: 11px;
     color: var(--txt3);
     margin-left: auto;
@@ -290,165 +340,217 @@ html, body {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 200px;
-}
-.topbar-file-tag i { font-size: 12px; color: var(--accent); flex-shrink: 0; }
+  }
+  .topbar-file-tag i {
+    font-size: 12px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
 
-/* ── Controls bar responsive ─────────────────────────────── */
-@media (max-width: 768px) {
+  /* ── Controls bar responsive ─────────────────────────────── */
+  @media (max-width: 768px) {
     .controls {
-        flex-wrap: wrap;
-        height: auto;
-        padding: 8px 12px;
-        gap: 8px;
+      flex-wrap: wrap;
+      height: auto;
+      padding: 8px 12px;
+      gap: 8px;
     }
-    .controls .btn { min-height: 44px; padding: 0 14px; }
-    .speed-group input[type=range] { min-height: 44px; }
-    .progress-track { display: none !important; }
-    .step-counter { font-size: 11px; }
-}
+    .controls .btn {
+      min-height: 44px;
+      padding: 0 14px;
+    }
+    .speed-group input[type="range"] {
+      min-height: 44px;
+    }
+    .progress-track {
+      display: none !important;
+    }
+    .step-counter {
+      font-size: 11px;
+    }
+  }
 
-/* ── Progress graph card ─────────────────────────────────── */
-#progress-graph-section { width: 100%; }
+  /* ── Progress graph card ─────────────────────────────────── */
+  #progress-graph-section {
+    width: 100%;
+  }
 
-#step-graph-canvas {
+  #step-graph-canvas {
     width: 100%;
     height: 70px;
     max-width: 100%;
     display: block;
     cursor: crosshair;
-}
+  }
 
-.graph-legend {
+  .graph-legend {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
     padding: 6px 12px 10px;
     font-size: 10px;
     color: var(--txt4);
-    font-family: 'DM Mono', monospace;
-}
-.legend-dot {
-    width: 8px; height: 8px;
+    font-family: "DM Mono", monospace;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     display: inline-block;
     margin-right: 4px;
     vertical-align: middle;
-}
+  }
 
-.graph-step-counter {
-    font-family: 'DM Mono', monospace;
+  .graph-step-counter {
+    font-family: "DM Mono", monospace;
     font-size: 12px;
     color: var(--accent);
     font-weight: 700;
     margin-left: auto;
-}
+  }
 
-/* ── Viz section ─────────────────────────────────────────── */
-.viz-section {
+  /* ── Viz section ─────────────────────────────────────────── */
+  .viz-section {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md, 8px);
     overflow: hidden;
     max-width: 100%;
-    flex-shrink: 0;     /* FIX: sections don't squish — scroll container handles overflow */
-}
+    flex-shrink: 0; /* FIX: sections don't squish — scroll container handles overflow */
+  }
 
-.viz-section-head {
+  .viz-section-head {
     display: flex;
     align-items: center;
     gap: 7px;
     padding: 8px 14px;
     border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
     min-width: 0;
-}
-.viz-section-head .section-label {
+  }
+  .viz-section-head .section-label {
     margin-bottom: 0;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-.viz-section-head .section-count {
+  }
+  .viz-section-head .section-count {
     font-size: 10px;
-    font-family: 'DM Mono', monospace;
+    font-family: "DM Mono", monospace;
     color: var(--txt4);
     background: var(--surface2);
     padding: 2px 7px;
     border-radius: 99px;
     border: 1px solid var(--border);
     flex-shrink: 0;
-}
-.viz-section-body { padding: 12px; max-width: 100%; }
+  }
+  .viz-section-body {
+    padding: 12px;
+    max-width: 100%;
+  }
 
-/* ── Empty state ─────────────────────────────────────────── */
-.empty-hint {
+  /* ── Empty state ─────────────────────────────────────────── */
+  .empty-hint {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 12px;
     color: var(--txt4);
     font-style: italic;
-}
-.empty-hint i { font-size: 14px; color: var(--txt4); }
+  }
+  .empty-hint i {
+    font-size: 14px;
+    color: var(--txt4);
+  }
 
-/* ── Animations ──────────────────────────────────────────── */
-@keyframes lineFlash {
-    0%   { background: rgba(0,229,160,0.22); }
-    100% { background: rgba(0,229,160,0.08); }
-}
-.code-line.active { animation: lineFlash 0.35s ease forwards; }
+  /* ── Animations ──────────────────────────────────────────── */
+  @keyframes lineFlash {
+    0% {
+      background: rgba(0, 229, 160, 0.22);
+    }
+    100% {
+      background: rgba(0, 229, 160, 0.08);
+    }
+  }
+  .code-line.active {
+    animation: lineFlash 0.35s ease forwards;
+  }
 
-@keyframes cellPop {
-    0%   { transform: scale(1.1); }
-    60%  { transform: scale(0.96); }
-    100% { transform: scale(1); }
-}
-.array-cell.found { animation: cellPop 0.3s ease; }
+  @keyframes cellPop {
+    0% {
+      transform: scale(1.1);
+    }
+    60% {
+      transform: scale(0.96);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .array-cell.found {
+    animation: cellPop 0.3s ease;
+  }
 
-@keyframes explanationSlide {
-    from { opacity: 0; transform: translateY(4px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-#step-explanation { animation: explanationSlide 0.2s ease; }
+  @keyframes explanationSlide {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  #step-explanation {
+    animation: explanationSlide 0.2s ease;
+  }
 
-@keyframes varFlash {
-    0%   { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
-    100% { border-color: var(--border); box-shadow: none; }
-}
-.var-card.changed { animation: varFlash 0.5s ease forwards; }
+  @keyframes varFlash {
+    0% {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    100% {
+      border-color: var(--border);
+      box-shadow: none;
+    }
+  }
+  .var-card.changed {
+    animation: varFlash 0.5s ease forwards;
+  }
 
-/* ── Progress fill track ─────────────────────────────────── */
-.progress-track {
+  /* ── Progress fill track ─────────────────────────────────── */
+  .progress-track {
     flex: 1;
     max-width: 160px;
     height: 3px;
     background: var(--surface3);
     border-radius: 99px;
     overflow: hidden;
-}
-.progress-fill {
+  }
+  .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #00B8FF);
+    background: linear-gradient(90deg, var(--accent), #00b8ff);
     border-radius: 99px;
     transition: width 0.3s ease;
     box-shadow: 0 0 8px var(--accent-glow);
-}
+  }
 
-/* ── Stack frame depth badge ─────────────────────────────── */
-.stack-frame-depth {
+  /* ── Stack frame depth badge ─────────────────────────────── */
+  .stack-frame-depth {
     font-size: 10px;
     padding: 2px 7px;
     border-radius: 99px;
     background: var(--accent-dim);
     color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    border: 1px solid rgba(0,229,160,0.2);
+    font-family: "DM Mono", monospace;
+    border: 1px solid rgba(0, 229, 160, 0.2);
     flex-shrink: 0;
-}
+  }
 
-/* ── Graph tooltip ───────────────────────────────────────── */
-#graph-tooltip {
+  /* ── Graph tooltip ───────────────────────────────────────── */
+  #graph-tooltip {
     position: fixed;
     display: none;
     background: var(--surface);
@@ -456,337 +558,426 @@ html, body {
     border-radius: 6px;
     padding: 5px 9px;
     font-size: 11px;
-    font-family: 'DM Mono', monospace;
+    font-family: "DM Mono", monospace;
     color: var(--txt2);
     z-index: 500;
     max-width: 220px;
     pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-}
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
 
-/* ── Code font on tablet ─────────────────────────────────── */
-@media (max-width: 1200px) and (min-width: 769px) {
-    .code-line .ln-body { font-size: 12px; }
-    .panel-header { font-size: 12px; }
-}
-@media (max-width: 768px) {
-    .code-line .ln-body { font-size: 11px; }
-    .ln-num { font-size: 10px; min-width: 28px; }
-}
+  /* ── Code font on tablet ─────────────────────────────────── */
+  @media (max-width: 1200px) and (min-width: 769px) {
+    .code-line .ln-body {
+      font-size: 12px;
+    }
+    .panel-header {
+      font-size: 12px;
+    }
+  }
+  @media (max-width: 768px) {
+    .code-line .ln-body {
+      font-size: 11px;
+    }
+    .ln-num {
+      font-size: 10px;
+      min-width: 28px;
+    }
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 
 <!-- ── Off-canvas overlay ──────────────────────────────── -->
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div
+  class="sidebar-overlay"
+  id="sidebar-overlay"
+  onclick="closeSidebar()"
+></div>
 
 <!-- ── Graph tooltip ──────────────────────────────────── -->
 <div id="graph-tooltip"></div>
 
 <!-- ── Topbar ─────────────────────────────────────────── -->
 <header class="topbar">
-    <div class="topbar-brand">
-        <!-- Hamburger (mobile only) -->
-        <button class="hamburger-btn" id="hamburger-btn"
-                onclick="toggleSidebar()" aria-label="Toggle sidebar">
-            <i class="ti ti-menu-2"></i>
-        </button>
-        <div class="brand-icon">
-            <i class="ti ti-chart-dots" aria-hidden="true"></i>
-        </div>
-        <div>
-            <div class="brand-name">AlgoScope</div>
-            <div class="brand-tag">Step-by-step visualizer</div>
-        </div>
+  <div class="topbar-brand">
+    <!-- Hamburger (mobile only) -->
+    <button
+      class="hamburger-btn"
+      id="hamburger-btn"
+      onclick="toggleSidebar()"
+      aria-label="Toggle sidebar"
+    >
+      <i class="ti ti-menu-2"></i>
+    </button>
+    <div class="brand-icon">
+      <i class="ti ti-chart-dots" aria-hidden="true"></i>
     </div>
-
-    <div class="topbar-center">
-        <select class="topbar-select" id="problem-selector"
-                onchange="window.location.href='/problem/' + this.value">
-            <option value="">Jump to problem…</option>
-            {% for p in problems %}
-            <option value="{{ p.slug }}"
-                {% if p.id == problem.id %}selected{% endif %}>
-                {{ p.leetcode_id }}. {{ p.title }} ({{ p.get_difficulty_display }})
-            </option>
-            {% endfor %}
-        </select>
-
-        <span class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
-            {{ problem.get_difficulty_display }}
-        </span>
-
-        <div class="topbar-sep"></div>
-
-        <div class="topbar-cat">
-            <i class="ti ti-tag" aria-hidden="true"></i>
-            {{ problem.get_category_display }}
-        </div>
+    <div>
+      <div class="brand-name">AlgoScope</div>
+      <div class="brand-tag">Step-by-step visualizer</div>
     </div>
+  </div>
 
-    <div class="topbar-end">
-        <span class="input-label">Custom input</span>
-        <input class="topbar-input" id="custom-input" type="text"
-               placeholder="e.g. [2,7,11,15], target=9">
+  <div class="topbar-center">
+    <select
+      class="topbar-select"
+      id="problem-selector"
+      onchange="window.location.href = '/problem/' + this.value"
+    >
+      <option value="">Jump to problem…</option>
+      {% for p in problems %}
+      <option
+        value="{{ p.slug }}"
+        {%
+        if
+        p.id=""
+        ="problem.id"
+        %}selected{%
+        endif
+        %}
+      >
+        {{ p.leetcode_id }}. {{ p.title }} ({{ p.get_difficulty_display }})
+      </option>
+      {% endfor %}
+    </select>
+
+    <span
+      class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}"
+    >
+      {{ problem.get_difficulty_display }}
+    </span>
+
+    <div class="topbar-sep"></div>
+
+    <div class="topbar-cat">
+      <i class="ti ti-tag" aria-hidden="true"></i>
+      {{ problem.get_category_display }}
     </div>
+  </div>
+
+  <div class="topbar-end">
+    <span class="input-label">Custom input</span>
+    <input
+      class="topbar-input"
+      id="custom-input"
+      type="text"
+      placeholder="e.g. [2,7,11,15], target=9"
+    />
+  </div>
 </header>
 
 <!-- ── Sidebar ───────────────────────────────────────── -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-section-label">Problems</div>
-    <div class="problem-list">
-        {% for p in problems %}
-        <a href="{% url 'detail' p.slug %}"
-           class="problem-item {% if p.id == problem.id %}active{% endif %}">
-            <span class="pi-num">{{ p.leetcode_id }}</span>
-            <span class="pi-title">{{ p.title }}</span>
-            <span class="pi-diff {% if p.difficulty == 'easy' %}badge-easy{% elif p.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
-                {{ p.get_difficulty_display|slice:":1" }}
-            </span>
-        </a>
-        {% endfor %}
+  <div class="sidebar-section-label">Problems</div>
+  <div class="problem-list">
+    {% for p in problems %}
+    <a
+      href="{% url 'detail' p.slug %}"
+      class="problem-item {% if p.id == problem.id %}active{% endif %}"
+    >
+      <span class="pi-num">{{ p.leetcode_id }}</span>
+      <span class="pi-title">{{ p.title }}</span>
+      <span
+        class="pi-diff {% if p.difficulty == 'easy' %}badge-easy{% elif p.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}"
+      >
+        {{ p.get_difficulty_display|slice:":1" }}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="sidebar-stats">
+    <div class="stat-mini">
+      <div class="stat-n">{{ problems|length }}</div>
+      <div class="stat-l">Problems</div>
     </div>
-    <div class="sidebar-stats">
-        <div class="stat-mini">
-            <div class="stat-n">{{ problems|length }}</div>
-            <div class="stat-l">Problems</div>
-        </div>
-        <div class="stat-mini">
-            <div class="stat-n" id="solved-count">0</div>
-            <div class="stat-l">Solved</div>
-        </div>
+    <div class="stat-mini">
+      <div class="stat-n" id="solved-count">0</div>
+      <div class="stat-l">Solved</div>
     </div>
+  </div>
 </aside>
 
 <!-- ── Main: code + visualizer ───────────────────────── -->
 <main class="main-content">
-    <div class="main-split">
+  <div class="main-split">
+    <!-- Left: Code panel -->
+    <div class="code-panel" id="code-panel">
+      <div class="panel-header">
+        <i class="ti ti-code" aria-hidden="true"></i>
+        solution.py
+        <div class="topbar-file-tag">
+          <i class="ti ti-hash"></i>
+          <span
+            style="
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+          >
+            {{ problem.leetcode_id }}. {{ problem.title }}
+          </span>
+        </div>
+        <button
+          class="code-toggle"
+          id="code-toggle"
+          onclick="toggleCodePanel()"
+          aria-label="Toggle code"
+        >
+          <i class="ti ti-chevron-up" id="code-toggle-icon"></i>
+        </button>
+      </div>
+      <div class="code-area" id="code-editor">
+        {% for line in problem.solution_code.splitlines %}
+        <div class="code-line" data-line="{{ forloop.counter }}">
+          <span class="ln-num">{{ forloop.counter }}</span>
+          <span class="ln-body">{{ line }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
 
-        <!-- Left: Code panel -->
-        <div class="code-panel" id="code-panel">
-            <div class="panel-header">
-                <i class="ti ti-code" aria-hidden="true"></i>
-                solution.py
-                <div class="topbar-file-tag">
-                    <i class="ti ti-hash"></i>
-                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        {{ problem.leetcode_id }}. {{ problem.title }}
-                    </span>
-                </div>
-                <button class="code-toggle" id="code-toggle"
-                        onclick="toggleCodePanel()" aria-label="Toggle code">
-                    <i class="ti ti-chevron-up" id="code-toggle-icon"></i>
-                </button>
-            </div>
-            <div class="code-area" id="code-editor">
-                {% for line in problem.solution_code.splitlines %}
-                <div class="code-line" data-line="{{ forloop.counter }}">
-                    <span class="ln-num">{{ forloop.counter }}</span>
-                    <span class="ln-body">{{ line }}</span>
-                </div>
-                {% endfor %}
-            </div>
+    <!-- Right: Execution state -->
+    <div class="viz-panel">
+      <div class="panel-header">
+        <i class="ti ti-cpu" aria-hidden="true"></i>
+        execution state
+        <span
+          id="exec-status"
+          style="
+            margin-left: auto;
+            font-size: 10px;
+            color: var(--txt4);
+            font-family: &quot;DM Mono&quot;, monospace;
+            letter-spacing: 0.04em;
+          "
+        >
+          idle
+        </span>
+      </div>
+      <div class="viz-scroll" id="viz-scroll">
+        <!-- ── Execution Progress Graph ─────────────────── -->
+        <div class="viz-section" id="progress-graph-section">
+          <div class="viz-section-head">
+            <span class="section-label">execution graph</span>
+            <span class="graph-step-counter" id="graph-counter">— / —</span>
+          </div>
+          <div style="padding: 10px 12px 0">
+            <canvas id="step-graph-canvas" height="70"></canvas>
+          </div>
+          <div class="graph-legend">
+            <span
+              ><span class="legend-dot" style="background: #888"></span
+              >pending</span
+            >
+            <span
+              ><span class="legend-dot" style="background: #00e5a0"></span
+              >visited</span
+            >
+            <span
+              ><span class="legend-dot" style="background: #00b8ff"></span
+              >current</span
+            >
+            <span
+              ><span class="legend-dot" style="background: #f5a623"></span>arr
+              change</span
+            >
+            <span
+              ><span class="legend-dot" style="background: #e056d9"></span>var
+              change</span
+            >
+          </div>
         </div>
 
-        <!-- Right: Execution state -->
-        <div class="viz-panel">
-            <div class="panel-header">
-                <i class="ti ti-cpu" aria-hidden="true"></i>
-                execution state
-                <span id="exec-status"
-                      style="margin-left:auto;font-size:10px;color:var(--txt4);
-                             font-family:'DM Mono',monospace;letter-spacing:0.04em">
-                    idle
-                </span>
+        <!-- Array visualization -->
+        <div class="viz-section">
+          <div class="viz-section-head">
+            <span class="section-label">array state</span>
+            <span class="section-count" id="arr-count">—</span>
+          </div>
+          <div class="viz-section-body">
+            <div class="array-visual" id="array-visualization">
+              <span class="empty-hint">
+                <i class="ti ti-layout-grid-add"></i>
+                Run or Step to see array state
+              </span>
             </div>
-            <div class="viz-scroll" id="viz-scroll">
+          </div>
+        </div>
 
-                <!-- ── Execution Progress Graph ─────────────────── -->
-                <div class="viz-section" id="progress-graph-section">
-                    <div class="viz-section-head">
-                        <span class="section-label">execution graph</span>
-                        <span class="graph-step-counter" id="graph-counter">— / —</span>
-                    </div>
-                    <div style="padding:10px 12px 0;">
-                        <canvas id="step-graph-canvas" height="70"></canvas>
-                    </div>
-                    <div class="graph-legend">
-                        <span><span class="legend-dot" style="background:#888;"></span>pending</span>
-                        <span><span class="legend-dot" style="background:#00e5a0;"></span>visited</span>
-                        <span><span class="legend-dot" style="background:#00B8FF;"></span>current</span>
-                        <span><span class="legend-dot" style="background:#f5a623;"></span>arr change</span>
-                        <span><span class="legend-dot" style="background:#e056d9;"></span>var change</span>
-                    </div>
-                </div>
+        <!-- Variables -->
+        <div class="viz-section">
+          <div class="viz-section-head">
+            <span class="section-label">variables</span>
+            <span class="section-count" id="var-count">—</span>
+          </div>
+          <div class="viz-section-body">
+            <div class="vars-grid" id="variables-grid">
+              <div class="empty-hint" style="grid-column: 1/-1">
+                <i class="ti ti-variable"></i>
+                No variables yet — click Step or Run.
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <!-- Array visualization -->
-                <div class="viz-section">
-                    <div class="viz-section-head">
-                        <span class="section-label">array state</span>
-                        <span class="section-count" id="arr-count">—</span>
-                    </div>
-                    <div class="viz-section-body">
-                        <div class="array-visual" id="array-visualization">
-                            <span class="empty-hint">
-                                <i class="ti ti-layout-grid-add"></i>
-                                Run or Step to see array state
-                            </span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Step explanation -->
+        <div class="viz-section">
+          <div class="viz-section-head">
+            <span class="section-label">step explanation</span>
+          </div>
+          <div class="viz-section-body" style="padding: 0">
+            <div
+              class="step-explanation"
+              id="step-explanation"
+              style="
+                border-radius: 0;
+                border: none;
+                border-left: 3px solid var(--accent);
+              "
+            >
+              Ready to visualize. Click <strong>Run</strong> or
+              <strong>Step →</strong> to begin.
+            </div>
+          </div>
+        </div>
 
-                <!-- Variables -->
-                <div class="viz-section">
-                    <div class="viz-section-head">
-                        <span class="section-label">variables</span>
-                        <span class="section-count" id="var-count">—</span>
-                    </div>
-                    <div class="viz-section-body">
-                        <div class="vars-grid" id="variables-grid">
-                            <div class="empty-hint" style="grid-column:1/-1">
-                                <i class="ti ti-variable"></i>
-                                No variables yet — click Step or Run.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step explanation -->
-                <div class="viz-section">
-                    <div class="viz-section-head">
-                        <span class="section-label">step explanation</span>
-                    </div>
-                    <div class="viz-section-body" style="padding:0">
-                        <div class="step-explanation" id="step-explanation"
-                             style="border-radius:0;border:none;border-left:3px solid var(--accent)">
-                            Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Call stack -->
-                <div class="viz-section">
-                    <div class="viz-section-head">
-                        <span class="section-label">call stack</span>
-                    </div>
-                    <div class="viz-section-body">
-                        <div class="call-stack" id="call-stack-display">
-                            <div class="stack-frame">
-                                <span>module.__main__</span>
-                                <span class="frame-line">line —</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div><!-- /viz-scroll -->
-        </div><!-- /viz-panel -->
-    </div><!-- /main-split -->
+        <!-- Call stack -->
+        <div class="viz-section">
+          <div class="viz-section-head">
+            <span class="section-label">call stack</span>
+          </div>
+          <div class="viz-section-body">
+            <div class="call-stack" id="call-stack-display">
+              <div class="stack-frame">
+                <span>module.__main__</span>
+                <span class="frame-line">line —</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /viz-scroll -->
+    </div>
+    <!-- /viz-panel -->
+  </div>
+  <!-- /main-split -->
 </main>
 
 <!-- ── Sidebar footer ────────────────────────────────── -->
 <div class="sidebar-footer">
-    <i class="ti ti-tag" aria-hidden="true"></i>
-    {{ problem.get_category_display }}
+  <i class="ti ti-tag" aria-hidden="true"></i>
+  {{ problem.get_category_display }}
 </div>
 
 <!-- ── Controls bar ──────────────────────────────────── -->
 <div class="controls">
-    <button class="btn btn-reset" id="reset-btn" title="Reset execution">
-        <i class="ti ti-refresh" aria-hidden="true"></i> Reset
-    </button>
-    <button class="btn btn-primary" id="run-btn" title="Run / Pause">
-        <i class="ti ti-player-play" aria-hidden="true"></i> Run
-    </button>
-    <button class="btn" id="step-btn" title="Step forward">
-        <i class="ti ti-arrow-right" aria-hidden="true"></i> Step →
-    </button>
+  <button class="btn btn-reset" id="reset-btn" title="Reset execution">
+    <i class="ti ti-refresh" aria-hidden="true"></i> Reset
+  </button>
+  <button class="btn btn-primary" id="run-btn" title="Run / Pause">
+    <i class="ti ti-player-play" aria-hidden="true"></i> Run
+  </button>
+  <button class="btn" id="step-btn" title="Step forward">
+    <i class="ti ti-arrow-right" aria-hidden="true"></i> Step →
+  </button>
 
-    <div class="speed-group">
-        <i class="ti ti-gauge" style="font-size:14px;" aria-hidden="true"></i>
-        <span>Speed</span>
-        <input type="range" id="speed-control" min="1" max="5" value="3"
-               style="touch-action:none;">
-        <span id="speed-value"
-              style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)">3×</span>
-    </div>
+  <div class="speed-group">
+    <i class="ti ti-gauge" style="font-size: 14px" aria-hidden="true"></i>
+    <span>Speed</span>
+    <input
+      type="range"
+      id="speed-control"
+      min="1"
+      max="5"
+      value="3"
+      style="touch-action: none"
+    />
+    <span
+      id="speed-value"
+      style="
+        font-family: &quot;DM Mono&quot;, monospace;
+        font-size: 11px;
+        color: var(--accent);
+      "
+      >3×</span
+    >
+  </div>
 
-    <div class="progress-track" id="progress-track" style="display:none">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
+  <div class="progress-track" id="progress-track" style="display: none">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
 
-    <div class="step-counter">
-        Step <span id="current-step">—</span> / <span id="total-steps">—</span>
-    </div>
+  <div class="step-counter">
+    Step <span id="current-step">—</span> / <span id="total-steps">—</span>
+  </div>
 
-    <span class="output-tag" id="output-tag" style="display:none">✓ Done</span>
+  <span class="output-tag" id="output-tag" style="display: none">✓ Done</span>
 </div>
 
-{% endblock %}
-
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
-// ═══════════════════════════════════════════════════════════
-//  AlgoScope detail.html — full JS refactor
-// ═══════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════
+  //  AlgoScope detail.html — full JS refactor
+  // ═══════════════════════════════════════════════════════════
 
-// ── State ─────────────────────────────────────────────────
-let executionSteps  = [];
-let currentStepIndex = -1;
-let isRunning       = false;
-let autoTimer       = null;
-let prevLocals      = {};
-let visitedSteps    = new Set();
-let stepMeta        = [];   // per-step metadata: {hasArrayChange, hasVarChange}
+  // ── State ─────────────────────────────────────────────────
+  let executionSteps = [];
+  let currentStepIndex = -1;
+  let isRunning = false;
+  let autoTimer = null;
+  let prevLocals = {};
+  let visitedSteps = new Set();
+  let stepMeta = []; // per-step metadata: {hasArrayChange, hasVarChange}
 
-// ── DOM refs ───────────────────────────────────────────────
-const codeLines     = document.querySelectorAll('.code-line');
-const varGrid       = document.getElementById('variables-grid');
-const arrVis        = document.getElementById('array-visualization');
-const stackDisplay  = document.getElementById('call-stack-display');
-const stepMsg       = document.getElementById('step-explanation');
-const curStepEl     = document.getElementById('current-step');
-const totStepEl     = document.getElementById('total-steps');
-const resetBtn      = document.getElementById('reset-btn');
-const runBtn        = document.getElementById('run-btn');
-const stepBtn       = document.getElementById('step-btn');
-const speedSlider   = document.getElementById('speed-control');
-const speedLabel    = document.getElementById('speed-value');
-const outputTag     = document.getElementById('output-tag');
-const execStatus    = document.getElementById('exec-status');
-const progressTrack = document.getElementById('progress-track');
-const progressFill  = document.getElementById('progress-fill');
-const arrCount      = document.getElementById('arr-count');
-const varCount      = document.getElementById('var-count');
-const graphCounter  = document.getElementById('graph-counter');
-const canvas        = document.getElementById('step-graph-canvas');
-const ctx           = canvas.getContext('2d');
-const tooltip       = document.getElementById('graph-tooltip');
-const problemSlug   = '{{ problem.slug }}';
+  // ── DOM refs ───────────────────────────────────────────────
+  const codeLines = document.querySelectorAll(".code-line");
+  const varGrid = document.getElementById("variables-grid");
+  const arrVis = document.getElementById("array-visualization");
+  const stackDisplay = document.getElementById("call-stack-display");
+  const stepMsg = document.getElementById("step-explanation");
+  const curStepEl = document.getElementById("current-step");
+  const totStepEl = document.getElementById("total-steps");
+  const resetBtn = document.getElementById("reset-btn");
+  const runBtn = document.getElementById("run-btn");
+  const stepBtn = document.getElementById("step-btn");
+  const speedSlider = document.getElementById("speed-control");
+  const speedLabel = document.getElementById("speed-value");
+  const outputTag = document.getElementById("output-tag");
+  const execStatus = document.getElementById("exec-status");
+  const progressTrack = document.getElementById("progress-track");
+  const progressFill = document.getElementById("progress-fill");
+  const arrCount = document.getElementById("arr-count");
+  const varCount = document.getElementById("var-count");
+  const graphCounter = document.getElementById("graph-counter");
+  const canvas = document.getElementById("step-graph-canvas");
+  const ctx = canvas.getContext("2d");
+  const tooltip = document.getElementById("graph-tooltip");
+  const problemSlug = "{{ problem.slug }}";
 
-// ── Helpers ────────────────────────────────────────────────
-function esc(text) {
-    const d = document.createElement('div');
+  // ── Helpers ────────────────────────────────────────────────
+  function esc(text) {
+    const d = document.createElement("div");
     d.textContent = String(text);
     return d.innerHTML;
-}
+  }
 
-function setStatus(txt, color) {
+  function setStatus(txt, color) {
     execStatus.textContent = txt;
-    execStatus.style.color = color || 'var(--txt4)';
-}
+    execStatus.style.color = color || "var(--txt4)";
+  }
 
-function updateProgress() {
+  function updateProgress() {
     if (!executionSteps.length) return;
-    const pct = ((currentStepIndex + 1) / executionSteps.length * 100).toFixed(1);
-    progressFill.style.width = pct + '%';
-}
+    const pct = (
+      ((currentStepIndex + 1) / executionSteps.length) *
+      100
+    ).toFixed(1);
+    progressFill.style.width = pct + "%";
+  }
 
-/** Sanitize function references and very long values */
-function sanitizeValue(val) {
-    if (typeof val !== 'string') val = String(val);
+  /** Sanitize function references and very long values */
+  function sanitizeValue(val) {
+    if (typeof val !== "string") val = String(val);
     // Truncate Python function repr: <function foo at 0x...>
     const fnMatch = val.match(/^<function\s+(\S+)\s+at\s+0x[0-9a-fA-F]+>$/);
     if (fnMatch) return `func ${fnMatch[1]}()`;
@@ -795,267 +986,343 @@ function sanitizeValue(val) {
     if (bmMatch) return `builtin ${bmMatch[1]}()`;
     // Truncate any other <...at 0x...>
     if (/<.+at 0x[0-9a-fA-F]+>/.test(val)) {
-        return val.replace(/<([^>]+)\s+at\s+0x[0-9a-fA-F]+>/g, (_, inner) => {
-            const name = inner.split(' ').pop();
-            return `<${name}>`;
-        });
+      return val.replace(/<([^>]+)\s+at\s+0x[0-9a-fA-F]+>/g, (_, inner) => {
+        const name = inner.split(" ").pop();
+        return `<${name}>`;
+      });
     }
     return val;
-}
+  }
 
-function highlightLine(lineNum) {
-    codeLines.forEach(el => {
-        el.classList.remove('active');
-        if (parseInt(el.dataset.line) === lineNum) {
-            el.classList.add('active');
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+  function highlightLine(lineNum) {
+    codeLines.forEach((el) => {
+      el.classList.remove("active");
+      if (parseInt(el.dataset.line) === lineNum) {
+        el.classList.add("active");
+        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
     });
-}
+  }
 
-// ── CSS var reader for graph colors ───────────────────────
-function cssVar(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-        || '#888';
-}
+  // ── CSS var reader for graph colors ───────────────────────
+  function cssVar(name) {
+    return (
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim() || "#888"
+    );
+  }
 
-// ── Pre-process step metadata after fetch ─────────────────
-function buildStepMeta() {
+  // ── Pre-process step metadata after fetch ─────────────────
+  function buildStepMeta() {
     stepMeta = [];
     let prevLoc = {};
     for (let i = 0; i < executionSteps.length; i++) {
-        const step = executionSteps[i];
-        const loc  = step.locals || {};
-        let hasArr = false, hasVar = false;
-        for (const [k, v] of Object.entries(loc)) {
-            if (prevLoc[k] !== undefined && prevLoc[k] !== v) {
-                try {
-                    const parsed = JSON.parse(v);
-                    if (Array.isArray(parsed)) hasArr = true;
-                    else hasVar = true;
-                } catch {
-                    hasVar = true;
-                }
-            } else if (prevLoc[k] === undefined) {
-                hasVar = true; // new variable
-            }
+      const step = executionSteps[i];
+      const loc = step.locals || {};
+      let hasArr = false,
+        hasVar = false;
+      for (const [k, v] of Object.entries(loc)) {
+        if (prevLoc[k] !== undefined && prevLoc[k] !== v) {
+          try {
+            const parsed = JSON.parse(v);
+            if (Array.isArray(parsed)) hasArr = true;
+            else hasVar = true;
+          } catch {
+            hasVar = true;
+          }
+        } else if (prevLoc[k] === undefined) {
+          hasVar = true; // new variable
         }
-        stepMeta.push({ hasArr, hasVar });
-        prevLoc = { ...loc };
+      }
+      stepMeta.push({ hasArr, hasVar });
+      prevLoc = { ...loc };
     }
-}
+  }
 
-// ── Canvas graph ───────────────────────────────────────────
-function drawGraph() {
+  // ── Canvas graph ───────────────────────────────────────────
+  function drawGraph() {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width  * dpr;
+    canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const W = rect.width, H = rect.height;
+    const W = rect.width,
+      H = rect.height;
     const n = executionSteps.length;
     ctx.clearRect(0, 0, W, H);
 
     if (!n) {
-        ctx.fillStyle = cssVar('--txt4') || '#555';
-        ctx.font = '11px "DM Mono", monospace';
-        ctx.fillText('Run or Step to see graph', 12, H / 2 + 4);
-        return;
+      ctx.fillStyle = cssVar("--txt4") || "#555";
+      ctx.font = '11px "DM Mono", monospace';
+      ctx.fillText("Run or Step to see graph", 12, H / 2 + 4);
+      return;
     }
 
-    const padX = 16, padY = 14;
+    const padX = 16,
+      padY = 14;
     const usableW = W - padX * 2;
     const cy = H / 2;
 
     // Step positions
-    const xs = n === 1
+    const xs =
+      n === 1
         ? [padX + usableW / 2]
         : executionSteps.map((_, i) => padX + (i / (n - 1)) * usableW);
 
     // Draw connector line
     ctx.beginPath();
     ctx.moveTo(xs[0], cy);
-    xs.forEach(x => ctx.lineTo(x, cy));
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    xs.forEach((x) => ctx.lineTo(x, cy));
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Progress fill line
     if (currentStepIndex >= 0) {
-        ctx.beginPath();
-        ctx.moveTo(xs[0], cy);
-        for (let i = 0; i <= Math.min(currentStepIndex, n - 1); i++) {
-            ctx.lineTo(xs[i], cy);
-        }
-        ctx.strokeStyle = '#00e5a0';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(xs[0], cy);
+      for (let i = 0; i <= Math.min(currentStepIndex, n - 1); i++) {
+        ctx.lineTo(xs[i], cy);
+      }
+      ctx.strokeStyle = "#00e5a0";
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
 
     // Draw nodes
     const r = Math.max(4, Math.min(8, usableW / n / 2 - 1));
     for (let i = 0; i < n; i++) {
-        const x = xs[i];
-        const meta = stepMeta[i] || {};
-        const isCurrent  = i === currentStepIndex;
-        const isVisited   = visitedSteps.has(i);
+      const x = xs[i];
+      const meta = stepMeta[i] || {};
+      const isCurrent = i === currentStepIndex;
+      const isVisited = visitedSteps.has(i);
 
-        let fillColor = '#444';
-        if (meta.hasArr)  fillColor = '#f5a623';
-        else if (meta.hasVar) fillColor = '#e056d9';
-        if (isVisited) fillColor = isVisited && !meta.hasArr && !meta.hasVar ? '#00e5a0' : fillColor;
-        if (isCurrent) fillColor = '#00B8FF';
+      let fillColor = "#444";
+      if (meta.hasArr) fillColor = "#f5a623";
+      else if (meta.hasVar) fillColor = "#e056d9";
+      if (isVisited)
+        fillColor =
+          isVisited && !meta.hasArr && !meta.hasVar ? "#00e5a0" : fillColor;
+      if (isCurrent) fillColor = "#00B8FF";
 
-        // Glow ring for current
-        if (isCurrent) {
-            ctx.beginPath();
-            ctx.arc(x, cy, r + 5, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,184,255,0.18)';
-            ctx.fill();
-        }
-
+      // Glow ring for current
+      if (isCurrent) {
         ctx.beginPath();
-        ctx.arc(x, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = fillColor;
+        ctx.arc(x, cy, r + 5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,184,255,0.18)";
         ctx.fill();
+      }
 
-        // Small step number label (only if not too crowded)
-        if (n <= 30) {
-            ctx.fillStyle = isCurrent ? '#00B8FF' : 'rgba(255,255,255,0.3)';
-            ctx.font = `9px "DM Mono", monospace`;
-            ctx.textAlign = 'center';
-            ctx.fillText(i + 1, x, cy + r + 11);
-        }
+      ctx.beginPath();
+      ctx.arc(x, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+
+      // Small step number label (only if not too crowded)
+      if (n <= 30) {
+        ctx.fillStyle = isCurrent ? "#00B8FF" : "rgba(255,255,255,0.3)";
+        ctx.font = `9px "DM Mono", monospace`;
+        ctx.textAlign = "center";
+        ctx.fillText(i + 1, x, cy + r + 11);
+      }
     }
-}
+  }
 
-// ── Tooltip on graph hover ─────────────────────────────────
-function graphXs() {
+  // ── Tooltip on graph hover ─────────────────────────────────
+  function graphXs() {
     const n = executionSteps.length;
     if (!n) return [];
     const rect = canvas.getBoundingClientRect();
-    const padX = 16, usableW = rect.width - padX * 2;
+    const padX = 16,
+      usableW = rect.width - padX * 2;
     return n === 1
-        ? [padX + usableW / 2]
-        : executionSteps.map((_, i) => padX + (i / (n - 1)) * usableW);
-}
+      ? [padX + usableW / 2]
+      : executionSteps.map((_, i) => padX + (i / (n - 1)) * usableW);
+  }
 
-canvas.addEventListener('mousemove', e => {
-    if (!executionSteps.length) { tooltip.style.display = 'none'; return; }
+  canvas.addEventListener("mousemove", (e) => {
+    if (!executionSteps.length) {
+      tooltip.style.display = "none";
+      return;
+    }
     const rect = canvas.getBoundingClientRect();
-    const mx   = e.clientX - rect.left;
-    const xs   = graphXs();
-    const r    = Math.max(4, Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1)) + 6;
-    let found  = -1;
-    xs.forEach((x, i) => { if (Math.abs(mx - x) < r) found = i; });
-    if (found === -1) { tooltip.style.display = 'none'; return; }
+    const mx = e.clientX - rect.left;
+    const xs = graphXs();
+    const r =
+      Math.max(
+        4,
+        Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
+      ) + 6;
+    let found = -1;
+    xs.forEach((x, i) => {
+      if (Math.abs(mx - x) < r) found = i;
+    });
+    if (found === -1) {
+      tooltip.style.display = "none";
+      return;
+    }
     const step = executionSteps[found];
     const expl = step.explanation
-        ? step.explanation.replace(/<[^>]+>/g, '').slice(0, 80)
-        : `Line ${step.line}`;
-    tooltip.style.display = 'block';
-    tooltip.style.left = (e.clientX + 12) + 'px';
-    tooltip.style.top  = (e.clientY - 8)  + 'px';
+      ? step.explanation.replace(/<[^>]+>/g, "").slice(0, 80)
+      : `Line ${step.line}`;
+    tooltip.style.display = "block";
+    tooltip.style.left = e.clientX + 12 + "px";
+    tooltip.style.top = e.clientY - 8 + "px";
     tooltip.textContent = `Step ${found + 1}: ${expl}`;
-});
-canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+  canvas.addEventListener("mouseleave", () => {
+    tooltip.style.display = "none";
+  });
 
-// ── Click-to-seek ──────────────────────────────────────────
-canvas.addEventListener('click', e => {
+  // ── Click-to-seek ──────────────────────────────────────────
+  canvas.addEventListener("click", (e) => {
     if (!executionSteps.length) return;
     const rect = canvas.getBoundingClientRect();
-    const mx   = e.clientX - rect.left;
-    const xs   = graphXs();
-    const r    = Math.max(4, Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1)) + 8;
-    let found  = -1;
-    xs.forEach((x, i) => { if (Math.abs(mx - x) < r) found = i; });
+    const mx = e.clientX - rect.left;
+    const xs = graphXs();
+    const r =
+      Math.max(
+        4,
+        Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
+      ) + 8;
+    let found = -1;
+    xs.forEach((x, i) => {
+      if (Math.abs(mx - x) < r) found = i;
+    });
     if (found === -1) return;
     currentStepIndex = found;
     visitedSteps.add(found);
     renderStep(found);
     if (found === executionSteps.length - 1) finishExecution();
-});
+  });
 
-// Touch support for graph seek
-canvas.addEventListener('touchend', e => {
-    if (!executionSteps.length) return;
-    const touch = e.changedTouches[0];
-    const rect  = canvas.getBoundingClientRect();
-    const mx    = touch.clientX - rect.left;
-    const xs    = graphXs();
-    const r     = Math.max(4, Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1)) + 10;
-    let found   = -1;
-    xs.forEach((x, i) => { if (Math.abs(mx - x) < r) found = i; });
-    if (found === -1) return;
-    e.preventDefault();
-    currentStepIndex = found;
-    visitedSteps.add(found);
-    renderStep(found);
-    if (found === executionSteps.length - 1) finishExecution();
-}, { passive: false });
+  // Touch support for graph seek
+  canvas.addEventListener(
+    "touchend",
+    (e) => {
+      if (!executionSteps.length) return;
+      const touch = e.changedTouches[0];
+      const rect = canvas.getBoundingClientRect();
+      const mx = touch.clientX - rect.left;
+      const xs = graphXs();
+      const r =
+        Math.max(
+          4,
+          Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
+        ) + 10;
+      let found = -1;
+      xs.forEach((x, i) => {
+        if (Math.abs(mx - x) < r) found = i;
+      });
+      if (found === -1) return;
+      e.preventDefault();
+      currentStepIndex = found;
+      visitedSteps.add(found);
+      renderStep(found);
+      if (found === executionSteps.length - 1) finishExecution();
+    },
+    { passive: false },
+  );
 
-// Redraw on resize
-const ro = new ResizeObserver(() => drawGraph());
-ro.observe(canvas);
+  // Redraw on resize
+  const ro = new ResizeObserver(() => drawGraph());
+  ro.observe(canvas);
 
-// ── Array viz ──────────────────────────────────────────────
-function updateArrayViz(variables) {
+  // ── Array viz ──────────────────────────────────────────────
+  function updateArrayViz(variables) {
     const found = [];
     for (const [k, v] of Object.entries(variables)) {
-        try {
-            const parsed = JSON.parse(v);
-            if (Array.isArray(parsed) && parsed.length) found.push({ name: k, data: parsed });
-        } catch (_) {}
+      try {
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed) && parsed.length)
+          found.push({ name: k, data: parsed });
+      } catch (_) {}
     }
     if (found.length) {
-        arrCount.textContent = found.reduce((s, a) => s + a.data.length, 0) + ' cells';
-        arrVis.innerHTML = found.map(a =>
+      arrCount.textContent =
+        found.reduce((s, a) => s + a.data.length, 0) + " cells";
+      arrVis.innerHTML = found
+        .map(
+          (a) =>
             `<div style="margin-bottom:10px;">
                 <div style="font-size:10px;color:var(--accent);margin-bottom:7px;font-weight:700;
                             letter-spacing:0.10em;text-transform:uppercase;
                             font-family:'DM Mono',monospace;">${esc(a.name)}</div>
                 <div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:flex-end;
                             overflow-x:auto;padding-bottom:4px;">
-                    ${a.data.map((v, i) =>
-                        `<div class="array-cell" style="animation-delay:${i * 0.03}s">
+                    ${a.data
+                      .map(
+                        (v, i) =>
+                          `<div class="array-cell" style="animation-delay:${i * 0.03}s">
                             <span style="font-size:13px">${esc(String(v))}</span>
-                        </div>`
-                    ).join('')}
+                        </div>`,
+                      )
+                      .join("")}
                 </div>
-            </div>`
-        ).join('');
+            </div>`,
+        )
+        .join("");
     } else {
-        arrCount.textContent = '—';
-        arrVis.innerHTML = '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data in current scope</span>';
+      arrCount.textContent = "—";
+      arrVis.innerHTML =
+        '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data in current scope</span>';
     }
-}
+  }
 
-// ── Variables ──────────────────────────────────────────────
-function updateVariables(variables) {
-    if (!variables || !Object.keys(variables).length) {
-        varCount.textContent = '—';
-        varGrid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables in scope</div>';
-        prevLocals = {};
-        return;
-    }
-    varCount.textContent = Object.keys(variables).length + ' vars';
-    varGrid.innerHTML = Object.entries(variables).map(([name, rawVal]) => {
-        const value   = sanitizeValue(rawVal);
-        const changed = prevLocals[name] !== undefined && prevLocals[name] !== value;
-        return `<div class="var-card${changed ? ' changed' : ''}">
-            <div class="var-name">${esc(name)}</div>
-            <div class="var-value${changed ? ' changed' : ''}">${esc(value)}</div>
-        </div>`;
-    }).join('');
-    prevLocals = Object.fromEntries(
-        Object.entries(variables).map(([k, v]) => [k, sanitizeValue(v)])
+  // ── Variables ──────────────────────────────────────────────
+  // ── Replace the updateVariables function in detail.html with this ──
+
+  function updateVariables(variables) {
+    // Strip any injected names that slipped through
+    const INJECTED = new Set([
+      "ListNode",
+      "TreeNode",
+      "GraphNode",
+      "Optional",
+      "List",
+      "Dict",
+      "Tuple",
+      "Set",
+      "Any",
+      "Union",
+      "Solution",
+      "solution",
+    ]);
+    const filtered = Object.fromEntries(
+      Object.entries(variables).filter(([k]) => !INJECTED.has(k)),
     );
-    updateArrayViz(variables);
-}
 
-// ── Render a single step ───────────────────────────────────
-function renderStep(idx) {
+    if (!filtered || !Object.keys(filtered).length) {
+      varCount.textContent = "—";
+      varGrid.innerHTML =
+        '<div class="empty-hint" style="grid-column:1/-1">' +
+        '<i class="ti ti-variable"></i>No variables in scope yet.</div>';
+      prevLocals = {};
+      return;
+    }
+
+    varCount.textContent = Object.keys(filtered).length + " vars";
+    varGrid.innerHTML = Object.entries(filtered)
+      .map(([name, rawVal]) => {
+        const value = sanitizeValue(rawVal);
+        const changed =
+          prevLocals[name] !== undefined && prevLocals[name] !== value;
+        return `<div class="var-card${changed ? " changed" : ""}">
+            <div class="var-name">${esc(name)}</div>
+            <div class="var-value${changed ? " changed" : ""}">${esc(value)}</div>
+        </div>`;
+      })
+      .join("");
+
+    prevLocals = Object.fromEntries(
+      Object.entries(filtered).map(([k, v]) => [k, sanitizeValue(v)]),
+    );
+    updateArrayViz(filtered);
+  }
+  // ── Render a single step ───────────────────────────────────
+  function renderStep(idx) {
     if (idx < 0 || !executionSteps.length) return;
     const step = executionSteps[idx];
     if (!step) return;
@@ -1064,12 +1331,13 @@ function renderStep(idx) {
     highlightLine(step.line);
     if (step.locals) updateVariables(step.locals);
 
-    stepMsg.innerHTML = step.explanation
-        || `<span style="color:var(--txt3)">Line ${step.line}: executing…</span>`;
+    stepMsg.innerHTML =
+      step.explanation ||
+      `<span style="color:var(--txt3)">Line ${step.line}: executing…</span>`;
 
     curStepEl.textContent = idx + 1;
     updateProgress();
-    setStatus('step ' + (idx + 1), 'var(--accent)');
+    setStatus("step " + (idx + 1), "var(--accent)");
     graphCounter.textContent = `${idx + 1} / ${executionSteps.length}`;
 
     const rawFn = step.function_name || problemSlug;
@@ -1095,208 +1363,222 @@ function renderStep(idx) {
 
     // Redraw graph with updated current step
     drawGraph();
-}
+  }
 
-// ── CSRF ───────────────────────────────────────────────────
-function getCsrf() {
+  // ── CSRF ───────────────────────────────────────────────────
+  function getCsrf() {
     const match = document.cookie.match(/csrftoken=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
+    return match ? decodeURIComponent(match[1]) : "";
+  }
 
-// ── API call ───────────────────────────────────────────────
-async function fetchSteps() {
-    const userInput = document.getElementById('custom-input')?.value || '';
-    setStatus('loading…', 'var(--med)');
+  // ── API call ───────────────────────────────────────────────
+  async function fetchSteps() {
+    const userInput = document.getElementById("custom-input")?.value || "";
+    setStatus("loading…", "var(--med)");
     try {
-        const res = await fetch(`/api/run/${problemSlug}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCsrf()
-            },
-            body: JSON.stringify({ input: userInput })
-        });
-        const data = await res.json();
-        if (data.success && data.steps) {
-            executionSteps = data.steps;
-            totStepEl.textContent = executionSteps.length;
-            graphCounter.textContent = `0 / ${executionSteps.length}`;
-            progressTrack.style.display = '';
-            buildStepMeta();
-            drawGraph();
-            currentStepIndex = 0;
-            renderStep(0);
-            setStatus('ready', 'var(--easy)');
-            return true;
-        } else {
-            stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
-                <i class="ti ti-alert-circle"></i>
-                Error: ${esc(data.error || 'Unknown error')}
-            </span>`;
-            setStatus('error', 'var(--hard)');
-            return false;
-        }
-    } catch (err) {
+      const res = await fetch(`/api/run/${problemSlug}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCsrf(),
+        },
+        body: JSON.stringify({ input: userInput }),
+      });
+      const data = await res.json();
+      if (data.success && data.steps) {
+        executionSteps = data.steps;
+        totStepEl.textContent = executionSteps.length;
+        graphCounter.textContent = `0 / ${executionSteps.length}`;
+        progressTrack.style.display = "";
+        buildStepMeta();
+        drawGraph();
+        currentStepIndex = 0;
+        renderStep(0);
+        setStatus("ready", "var(--easy)");
+        return true;
+      } else {
         stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
+                <i class="ti ti-alert-circle"></i>
+                Error: ${esc(data.error || "Unknown error")}
+            </span>`;
+        setStatus("error", "var(--hard)");
+        return false;
+      }
+    } catch (err) {
+      stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
             <i class="ti ti-wifi-off"></i>
             Network error: ${esc(err.message)}
         </span>`;
-        setStatus('error', 'var(--hard)');
-        return false;
+      setStatus("error", "var(--hard)");
+      return false;
     }
-}
+  }
 
-// ── Controls ───────────────────────────────────────────────
-function resetAll() {
+  // ── Controls ───────────────────────────────────────────────
+  function resetAll() {
     clearInterval(autoTimer);
     autoTimer = null;
     isRunning = false;
-    executionSteps  = [];
+    executionSteps = [];
     currentStepIndex = -1;
     prevLocals = {};
     visitedSteps.clear();
     stepMeta = [];
 
-    curStepEl.textContent = '—';
-    totStepEl.textContent = '—';
-    varCount.textContent  = '—';
-    arrCount.textContent  = '—';
-    graphCounter.textContent = '— / —';
+    curStepEl.textContent = "—";
+    totStepEl.textContent = "—";
+    varCount.textContent = "—";
+    arrCount.textContent = "—";
+    graphCounter.textContent = "— / —";
 
-    varGrid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables yet — click Step or Run.</div>';
-    arrVis.innerHTML  = '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>Run or Step to see array state</span>';
-    stepMsg.innerHTML = 'Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.';
-    stackDisplay.innerHTML = '<div class="stack-frame"><span>module.__main__</span><span class="frame-line">line —</span></div>';
+    varGrid.innerHTML =
+      '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables yet — click Step or Run.</div>';
+    arrVis.innerHTML =
+      '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>Run or Step to see array state</span>';
+    stepMsg.innerHTML =
+      "Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.";
+    stackDisplay.innerHTML =
+      '<div class="stack-frame"><span>module.__main__</span><span class="frame-line">line —</span></div>';
 
-    outputTag.style.display = 'none';
-    progressTrack.style.display = 'none';
-    progressFill.style.width = '0%';
+    outputTag.style.display = "none";
+    progressTrack.style.display = "none";
+    progressFill.style.width = "0%";
 
-    codeLines.forEach(l => l.classList.remove('active'));
-    runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-    setStatus('idle', 'var(--txt4)');
+    codeLines.forEach((l) => l.classList.remove("active"));
+    runBtn.innerHTML =
+      '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+    setStatus("idle", "var(--txt4)");
     drawGraph();
-}
+  }
 
-async function doStep() {
+  async function doStep() {
     if (!executionSteps.length) {
-        await fetchSteps();
+      await fetchSteps();
     } else if (currentStepIndex < executionSteps.length - 1) {
-        currentStepIndex++;
-        renderStep(currentStepIndex);
-        if (currentStepIndex === executionSteps.length - 1) finishExecution();
+      currentStepIndex++;
+      renderStep(currentStepIndex);
+      if (currentStepIndex === executionSteps.length - 1) finishExecution();
     }
-}
+  }
 
-function finishExecution() {
-    stepMsg.innerHTML = '<span style="color:var(--easy);display:flex;align-items:center;gap:6px;"><i class="ti ti-check"></i><strong>Execution complete!</strong></span> Click Reset to run again.';
-    outputTag.style.display = '';
-    progressFill.style.width = '100%';
-    setStatus('complete', 'var(--easy)');
+  function finishExecution() {
+    stepMsg.innerHTML =
+      '<span style="color:var(--easy);display:flex;align-items:center;gap:6px;"><i class="ti ti-check"></i><strong>Execution complete!</strong></span> Click Reset to run again.';
+    outputTag.style.display = "";
+    progressFill.style.width = "100%";
+    setStatus("complete", "var(--easy)");
     drawGraph();
-}
+  }
 
-async function toggleRun() {
+  async function toggleRun() {
     if (isRunning) {
-        isRunning = false;
-        clearInterval(autoTimer);
-        runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-        setStatus('paused', 'var(--med)');
-        return;
+      isRunning = false;
+      clearInterval(autoTimer);
+      runBtn.innerHTML =
+        '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+      setStatus("paused", "var(--med)");
+      return;
     }
 
     isRunning = true;
-    runBtn.innerHTML = '<i class="ti ti-player-pause" aria-hidden="true"></i> Pause';
-    setStatus('running', 'var(--accent)');
+    runBtn.innerHTML =
+      '<i class="ti ti-player-pause" aria-hidden="true"></i> Pause';
+    setStatus("running", "var(--accent)");
 
     const startPlay = () => {
-        const speed = parseInt(speedSlider.value);
-        const delay = Math.round(1200 / speed);
-        autoTimer = setInterval(() => {
-            if (currentStepIndex >= executionSteps.length - 1) {
-                clearInterval(autoTimer);
-                isRunning = false;
-                runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-                finishExecution();
-                return;
-            }
-            currentStepIndex++;
-            renderStep(currentStepIndex);
-        }, delay);
+      const speed = parseInt(speedSlider.value);
+      const delay = Math.round(1200 / speed);
+      autoTimer = setInterval(() => {
+        if (currentStepIndex >= executionSteps.length - 1) {
+          clearInterval(autoTimer);
+          isRunning = false;
+          runBtn.innerHTML =
+            '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+          finishExecution();
+          return;
+        }
+        currentStepIndex++;
+        renderStep(currentStepIndex);
+      }, delay);
     };
 
     if (!executionSteps.length) {
-        const ok = await fetchSteps();
-        if (ok) startPlay();
-        else {
-            isRunning = false;
-            runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-        }
+      const ok = await fetchSteps();
+      if (ok) startPlay();
+      else {
+        isRunning = false;
+        runBtn.innerHTML =
+          '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+      }
     } else {
-        startPlay();
+      startPlay();
     }
-}
+  }
 
-// ── Event listeners ────────────────────────────────────────
-resetBtn.addEventListener('click', resetAll);
-runBtn.addEventListener('click', toggleRun);
-stepBtn.addEventListener('click', doStep);
+  // ── Event listeners ────────────────────────────────────────
+  resetBtn.addEventListener("click", resetAll);
+  runBtn.addEventListener("click", toggleRun);
+  stepBtn.addEventListener("click", doStep);
 
-speedSlider.addEventListener('input', () => {
+  speedSlider.addEventListener("input", () => {
     const v = speedSlider.value;
-    speedLabel.textContent = v + '×';
+    speedLabel.textContent = v + "×";
     if (isRunning) {
-        clearInterval(autoTimer);
-        const delay = Math.round(1200 / parseInt(v));
-        autoTimer = setInterval(() => {
-            if (currentStepIndex >= executionSteps.length - 1) {
-                clearInterval(autoTimer);
-                isRunning = false;
-                runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-                finishExecution();
-                return;
-            }
-            currentStepIndex++;
-            renderStep(currentStepIndex);
-        }, delay);
+      clearInterval(autoTimer);
+      const delay = Math.round(1200 / parseInt(v));
+      autoTimer = setInterval(() => {
+        if (currentStepIndex >= executionSteps.length - 1) {
+          clearInterval(autoTimer);
+          isRunning = false;
+          runBtn.innerHTML =
+            '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+          finishExecution();
+          return;
+        }
+        currentStepIndex++;
+        renderStep(currentStepIndex);
+      }, delay);
     }
-});
+  });
 
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleRun(); }
-    if (e.key === 'ArrowRight' || e.key === 'n') doStep();
-    if (e.key === 'r' || e.key === 'Escape') resetAll();
-});
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      toggleRun();
+    }
+    if (e.key === "ArrowRight" || e.key === "n") doStep();
+    if (e.key === "r" || e.key === "Escape") resetAll();
+  });
 
-// ── Sidebar toggle (mobile) ────────────────────────────────
-function toggleSidebar() {
-    const sb  = document.getElementById('sidebar');
-    const ov  = document.getElementById('sidebar-overlay');
-    const open = sb.classList.toggle('open');
-    ov.classList.toggle('visible', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-}
-function closeSidebar() {
-    const sb = document.getElementById('sidebar');
-    const ov = document.getElementById('sidebar-overlay');
-    sb.classList.remove('open');
-    ov.classList.remove('visible');
-    document.body.style.overflow = '';
-}
+  // ── Sidebar toggle (mobile) ────────────────────────────────
+  function toggleSidebar() {
+    const sb = document.getElementById("sidebar");
+    const ov = document.getElementById("sidebar-overlay");
+    const open = sb.classList.toggle("open");
+    ov.classList.toggle("visible", open);
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+  function closeSidebar() {
+    const sb = document.getElementById("sidebar");
+    const ov = document.getElementById("sidebar-overlay");
+    sb.classList.remove("open");
+    ov.classList.remove("visible");
+    document.body.style.overflow = "";
+  }
 
-// ── Collapsible code panel (mobile) ───────────────────────
-function toggleCodePanel() {
-    const panel = document.getElementById('code-panel');
-    const icon  = document.getElementById('code-toggle-icon');
-    panel.classList.toggle('collapsed');
-    icon.className = panel.classList.contains('collapsed')
-        ? 'ti ti-chevron-down'
-        : 'ti ti-chevron-up';
-}
+  // ── Collapsible code panel (mobile) ───────────────────────
+  function toggleCodePanel() {
+    const panel = document.getElementById("code-panel");
+    const icon = document.getElementById("code-toggle-icon");
+    panel.classList.toggle("collapsed");
+    icon.className = panel.classList.contains("collapsed")
+      ? "ti ti-chevron-down"
+      : "ti ti-chevron-up";
+  }
 
-// ── Init ───────────────────────────────────────────────────
-resetAll();
+  // ── Init ───────────────────────────────────────────────────
+  resetAll();
 </script>
 {% endblock %}
