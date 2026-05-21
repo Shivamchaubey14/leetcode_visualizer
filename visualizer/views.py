@@ -1,5 +1,6 @@
 import json
-import anthropic
+from groq import Groq
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8,18 +9,18 @@ from .models import Problem
 from .utils import execute_with_trace
 
 
-from google import genai
-from django.conf import settings
-
-from groq import Groq
-
-def generate_explanation(problem: Problem) -> str:
-    print(f"\n{'─'*60}")
-    print(f"  [explanation] Generating for: {problem.leetcode_id}. {problem.title}")
-
+def _call_groq(prompt: str) -> str:
     client = Groq(api_key=settings.GROQ_API_KEY)
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=400,
+    )
+    return response.choices[0].message.content
 
-    prompt = f"""Explain this LeetCode solution to a beginner.
+
+def _english_prompt(problem) -> str:
+    return f"""Explain this LeetCode solution to a beginner.
 
 Problem: {problem.leetcode_id}. {problem.title} ({problem.get_difficulty_display()})
 Category: {problem.get_category_display()}
@@ -36,19 +37,54 @@ Format exactly as:
 **Key insight:** one sentence.
 **Complexity:** Time: O(...) | Space: O(...)
 
-Max 200 words."""
+Max 200 words. Beginner-friendly."""
 
-    print(f"  [explanation] Calling Groq API...")
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=400,
-    )
-    result = response.choices[0].message.content
-    print(f"  [explanation] Received {len(result)} chars")
-    print(f"  [explanation] Preview: {result[:120].replace(chr(10), ' ')}...")
+
+def _hindi_prompt(problem) -> str:
+    return f"""Explain this LeetCode solution to a beginner IN HINDI ONLY.
+
+Problem: {problem.leetcode_id}. {problem.title} ({problem.get_difficulty_display()})
+Category: {problem.get_category_display()}
+
+```python
+{problem.solution_code}
+```
+
+Format exactly as (use Hindi text, keep code/complexity symbols in English):
+**तरीका:** एक वाक्य में मुख्य विचार।
+**चरण:**
+1. ...
+2. ...
+**मुख्य बात:** एक वाक्य में क्यों काम करता है।
+**जटिलता:** Time: O(...) | Space: O(...)
+
+Max 200 words. Simple Hindi, beginner-friendly."""
+
+
+def generate_explanation(problem: Problem):
+    """Generate and cache both EN and HI explanations."""
+    print(f"\n{'─'*60}")
+    print(f"  [explanation] Generating for: {problem.leetcode_id}. {problem.title}")
+
+    fields_to_save = []
+
+    if not problem.code_explanation:
+        print(f"  [explanation] Calling Groq for English...")
+        problem.code_explanation = _call_groq(_english_prompt(problem))
+        fields_to_save.append('code_explanation')
+        print(f"  [explanation] English done ({len(problem.code_explanation)} chars)")
+
+    if not problem.code_explanation_hi:
+        print(f"  [explanation] Calling Groq for Hindi...")
+        problem.code_explanation_hi = _call_groq(_hindi_prompt(problem))
+        fields_to_save.append('code_explanation_hi')
+        print(f"  [explanation] Hindi done ({len(problem.code_explanation_hi)} chars)")
+
+    if fields_to_save:
+        problem.save(update_fields=fields_to_save)
+        print(f"  [explanation] Saved to DB: {fields_to_save}")
+
     print(f"{'─'*60}\n")
-    return result
 
 
 def index(request):
@@ -61,25 +97,21 @@ def detail(request, slug):
     problems = Problem.objects.all().order_by('leetcode_id')
 
     print(f"\n{'='*60}")
-    print(f"  [detail] slug={slug}")
-    print(f"  [detail] problem={problem.leetcode_id}. {problem.title}")
-    print(f"  [detail] has_explanation={bool(problem.code_explanation)}")
+    print(f"  [detail] slug={slug}  has_en={bool(problem.code_explanation)}  has_hi={bool(problem.code_explanation_hi)}")
 
-    # Generate and cache explanation if not already stored
-    if not problem.code_explanation:
-        print(f"  [detail] No explanation found — generating now...")
+    if not problem.code_explanation or not problem.code_explanation_hi:
         try:
-            explanation = generate_explanation(problem)
-            problem.code_explanation = explanation
-            problem.save(update_fields=['code_explanation'])
-            print(f"  [detail] Explanation saved to DB ✓")
+            generate_explanation(problem)
         except Exception as e:
-            print(f"  [detail] ERROR generating explanation: {e}")
             import traceback
+            print(f"  [detail] ERROR: {e}")
             traceback.print_exc()
-            problem.code_explanation = "Explanation not available."
+            if not problem.code_explanation:
+                problem.code_explanation = "Explanation not available."
+            if not problem.code_explanation_hi:
+                problem.code_explanation_hi = "हिंदी व्याख्या उपलब्ध नहीं है।"
     else:
-        print(f"  [detail] Using cached explanation ({len(problem.code_explanation)} chars)")
+        print(f"  [detail] Using cached explanations")
 
     print(f"{'='*60}\n")
 
@@ -87,6 +119,16 @@ def detail(request, slug):
         'problem': problem,
         'problems': problems,
     })
+
+
+# ── New endpoint: returns explanation JSON for JS typewriter ──
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_explanation(request, slug):
+    problem = get_object_or_404(Problem, slug=slug)
+    lang = request.GET.get('lang', 'en')
+    text = problem.code_explanation_hi if lang == 'hi' else problem.code_explanation
+    return JsonResponse({'text': text, 'lang': lang})
 
 
 @csrf_exempt
@@ -113,7 +155,7 @@ def run_code(request, slug):
             print(f"  [run_code] SOURCE   : stored test case [{idx}]")
         else:
             test_case = None
-            print(f"  [run_code] SOURCE   : none — no test cases configured")
+            print(f"  [run_code] SOURCE   : none")
 
         print(f"  [run_code] TC USED  : {test_case}")
         print(f"{'─'*60}")
@@ -123,14 +165,12 @@ def run_code(request, slug):
         print(f"  [run_code] STEPS    : {len(steps)}")
         print(f"  [run_code] OUTPUT   : {repr(output)}")
         print(f"  [run_code] ERROR    : {repr(error)}")
-
         if steps:
             s0, sN = steps[0], steps[-1]
             print(f"  [run_code] STEP[0]  : line={s0['line']}  fn={s0['function_name']}  vars={list(s0['locals'].keys())}")
             print(f"  [run_code] STEP[-1] : line={sN['line']}  fn={sN['function_name']}  vars={list(sN['locals'].keys())}")
         else:
-            print(f"  [run_code] WARNING  : 0 steps returned — check solution code and test cases")
-
+            print(f"  [run_code] WARNING  : 0 steps returned")
         print(f"{'='*60}\n")
 
         return JsonResponse({
