@@ -25,6 +25,11 @@ class Problem(models.Model):
     description = models.TextField()
     solution_code = models.TextField(help_text="Python solution code")
     test_cases = models.JSONField(default=list, help_text="List of test inputs")
+    code_explanation = models.TextField(
+        blank=True,
+        default='',
+        help_text="Step-by-step explanation of the solution (auto-generated or manual)"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
