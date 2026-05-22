@@ -4,46 +4,40 @@
    ALGOSCOPE – DETAIL PAGE  |  Full responsive refactor
    ═══════════════════════════════════════════════════════════ */
 
-  /* ── Reset & box-sizing ──────────────────────────────────── */
   *,
   *::before,
   *::after {
     box-sizing: border-box;
   }
 
-  /* ── FIX: lock the full page to the viewport ─────────────── */
   html,
   body {
     height: 100%;
     overflow: hidden;
   }
 
-  /* ── FIX: main-content must fill & not overflow ──────────── */
   .main-content {
     flex: 1 1 0;
-    min-height: 0; /* critical: allows flex child to shrink */
+    min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
-  /* ── Layout root ─────────────────────────────────────────── */
   .main-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    flex: 1 1 0; /* FIX: fill main-content vertically */
-    min-height: 0; /* FIX: allow grid to shrink */
+    flex: 1 1 0;
+    min-height: 0;
     overflow: hidden;
   }
 
-  /* Tablet: slightly skewed ratio */
   @media (max-width: 1200px) and (min-width: 769px) {
     .main-split {
       grid-template-columns: 1.25fr 0.75fr;
     }
   }
 
-  /* Mobile: single column */
   @media (max-width: 768px) {
     .main-split {
       grid-template-columns: 1fr;
@@ -52,6 +46,7 @@
       overflow: visible;
     }
   }
+
   @keyframes cursorBlink {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0; }
@@ -65,10 +60,9 @@
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
-    min-height: 0; /* FIX */
+    min-height: 0;
   }
 
-  /* FIX: code-area scrolls internally */
   .code-area {
     flex: 1 1 0;
     min-height: 0;
@@ -100,7 +94,7 @@
     overflow: hidden;
     background: var(--bg);
     min-width: 0;
-    min-height: 0; /* FIX */
+    min-height: 0;
   }
 
   @media (max-width: 768px) {
@@ -109,10 +103,9 @@
     }
   }
 
-  /* ── FIX: viz-scroll is the ONLY scroll region in viz panel  */
   .viz-scroll {
-    flex: 1 1 0; /* fill remaining height in viz-panel */
-    min-height: 0; /* critical — without this it expands past parent */
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
@@ -131,7 +124,6 @@
     }
   }
 
-  /* ── controls: never shrink, always visible ──────────────── */
   .controls {
     flex-shrink: 0;
     border-top: 1px solid var(--border);
@@ -139,7 +131,6 @@
     z-index: 10;
   }
 
-  /* ── Topbar responsive ───────────────────────────────────── */
   .topbar {
     flex-shrink: 0;
   }
@@ -160,34 +151,18 @@
       padding: 8px 12px;
       height: auto;
     }
-    .topbar-brand {
-      flex: 1 1 auto;
-    }
-    .topbar-center {
-      order: 3;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-    .topbar-end {
-      order: 4;
-      width: 100%;
-    }
-    .topbar-input {
-      width: 100%;
-    }
-    .topbar-select {
-      font-size: 12px;
-      max-width: 200px;
-    }
+    .topbar-brand { flex: 1 1 auto; }
+    .topbar-center { order: 3; width: 100%; flex-wrap: wrap; }
+    .topbar-end { order: 4; width: 100%; }
+    .topbar-input { width: 100%; }
+    .topbar-select { font-size: 12px; max-width: 200px; }
   }
 
-  /* ── Hamburger button ────────────────────────────────────── */
   .hamburger-btn {
     display: none;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm, 6px);
     background: var(--surface);
@@ -197,220 +172,122 @@
     flex-shrink: 0;
   }
   @media (max-width: 768px) {
-    .hamburger-btn {
-      display: flex;
-    }
+    .hamburger-btn { display: flex; }
   }
 
-  /* ── Off-canvas sidebar ──────────────────────────────────── */
   @media (max-width: 768px) {
     .sidebar {
       position: fixed;
-      left: -260px;
-      top: 0;
-      bottom: 0;
-      width: 240px;
-      z-index: 1000;
+      left: -260px; top: 0; bottom: 0;
+      width: 240px; z-index: 1000;
       transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: none;
     }
     .sidebar.open {
       left: 0;
-      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.5);
     }
     .sidebar-overlay {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 999;
     }
-    .sidebar-overlay.visible {
-      display: block;
-    }
+    .sidebar-overlay.visible { display: block; }
   }
 
-  /* ── Collapsible code panel toggle (mobile) ──────────────── */
   .code-toggle {
     display: none;
-    align-items: center;
-    gap: 6px;
+    align-items: center; gap: 6px;
     margin-left: auto;
     cursor: pointer;
-    font-size: 11px;
-    color: var(--accent);
-    background: none;
-    border: none;
-    padding: 0;
+    font-size: 11px; color: var(--accent);
+    background: none; border: none; padding: 0;
     font-family: "DM Mono", monospace;
   }
   @media (max-width: 768px) {
-    .code-toggle {
-      display: flex;
-    }
+    .code-toggle { display: flex; }
   }
 
   /* ── Array visualization ─────────────────────────────────── */
   .array-visual {
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow-x: auto; overflow-y: visible;
     max-width: 100%;
     scrollbar-width: thin;
     scrollbar-color: var(--surface3) transparent;
   }
 
   .array-cell {
-    min-width: 45px;
-    max-width: 70px;
-    flex: 0 0 auto;
-    box-sizing: border-box;
+    min-width: 45px; max-width: 70px;
+    flex: 0 0 auto; box-sizing: border-box;
   }
 
   @media (max-width: 768px) {
-    .array-cell {
-      min-width: 36px;
-      max-width: 54px;
-      font-size: 11px;
-    }
+    .array-cell { min-width: 36px; max-width: 54px; font-size: 11px; }
   }
 
-  /* ── Variables grid ──────────────────────────────────────── */
   .vars-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     max-width: 100%;
   }
 
   @media (max-width: 768px) {
-    .vars-grid {
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    }
+    .vars-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   }
 
-  .var-card {
-    max-width: 100%;
-    overflow: hidden;
-  }
-  .var-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 100%;
-  }
-  .var-value {
-    word-break: break-all;
-    max-height: 72px;
-    overflow-y: auto;
-    max-width: 100%;
-  }
+  .var-card { max-width: 100%; overflow: hidden; }
+  .var-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .var-value { word-break: break-all; max-height: 72px; overflow-y: auto; max-width: 100%; }
 
-  /* ── Call stack overflow fix ─────────────────────────────── */
   .stack-frame {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    min-width: 0;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; min-width: 0;
   }
   .stack-fn-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 180px;
-    flex: 1 1 auto;
-    min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 180px; flex: 1 1 auto; min-width: 0;
   }
   @media (max-width: 768px) {
     .stack-fn-name {
-      white-space: normal;
-      word-break: break-word;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      max-width: 100%;
+      white-space: normal; word-break: break-word;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden; max-width: 100%;
     }
   }
 
-  /* ── Topbar file tag ─────────────────────────────────────── */
   .topbar-file-tag {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-family: "DM Mono", monospace;
-    font-size: 11px;
-    color: var(--txt3);
-    margin-left: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+    font-family: "DM Mono", monospace; font-size: 11px;
+    color: var(--txt3); margin-left: auto;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     max-width: 200px;
   }
-  .topbar-file-tag i {
-    font-size: 12px;
-    color: var(--accent);
-    flex-shrink: 0;
-  }
+  .topbar-file-tag i { font-size: 12px; color: var(--accent); flex-shrink: 0; }
 
-  /* ── Controls bar responsive ─────────────────────────────── */
   @media (max-width: 768px) {
-    .controls {
-      flex-wrap: wrap;
-      height: auto;
-      padding: 8px 12px;
-      gap: 8px;
-    }
-    .controls .btn {
-      min-height: 44px;
-      padding: 0 14px;
-    }
-    .speed-group input[type="range"] {
-      min-height: 44px;
-    }
-    .progress-track {
-      display: none !important;
-    }
-    .step-counter {
-      font-size: 11px;
-    }
+    .controls { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 8px; }
+    .controls .btn { min-height: 44px; padding: 0 14px; }
+    .speed-group input[type="range"] { min-height: 44px; }
+    .progress-track { display: none !important; }
+    .step-counter { font-size: 11px; }
   }
 
   /* ── Progress graph card ─────────────────────────────────── */
-  #progress-graph-section {
-    width: 100%;
-  }
-
-  #step-graph-canvas {
-    width: 100%;
-    height: 70px;
-    max-width: 100%;
-    display: block;
-    cursor: crosshair;
-  }
+  #progress-graph-section { width: 100%; }
 
   .graph-legend {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex; gap: 12px; flex-wrap: wrap;
     padding: 6px 12px 10px;
-    font-size: 10px;
-    color: var(--txt4);
+    font-size: 10px; color: var(--txt4);
     font-family: "DM Mono", monospace;
   }
   .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 4px;
-    vertical-align: middle;
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 4px; vertical-align: middle;
   }
 
   .graph-step-counter {
-    font-family: "DM Mono", monospace;
-    font-size: 12px;
-    color: var(--accent);
-    font-weight: 700;
-    margin-left: auto;
+    font-family: "DM Mono", monospace; font-size: 12px;
+    color: var(--accent); font-weight: 700; margin-left: auto;
   }
 
   /* ── Viz section ─────────────────────────────────────────── */
@@ -418,185 +295,317 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md, 8px);
-    overflow: hidden;
-    max-width: 100%;
-    flex-shrink: 0; /* FIX: sections don't squish — scroll container handles overflow */
+    overflow: hidden; max-width: 100%; flex-shrink: 0;
   }
 
   .viz-section-head {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    display: flex; align-items: center; gap: 7px;
     padding: 8px 14px;
     border-bottom: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.02);
-    min-width: 0;
+    background: rgba(255,255,255,0.02); min-width: 0;
   }
   .viz-section-head .section-label {
-    margin-bottom: 0;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin-bottom: 0; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .viz-section-head .section-count {
-    font-size: 10px;
-    font-family: "DM Mono", monospace;
-    color: var(--txt4);
-    background: var(--surface2);
-    padding: 2px 7px;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
+    font-size: 10px; font-family: "DM Mono", monospace;
+    color: var(--txt4); background: var(--surface2);
+    padding: 2px 7px; border-radius: 99px;
+    border: 1px solid var(--border); flex-shrink: 0;
   }
-  .viz-section-body {
-    padding: 12px;
-    max-width: 100%;
-  }
+  .viz-section-body { padding: 12px; max-width: 100%; }
 
-  /* ── Empty state ─────────────────────────────────────────── */
   .empty-hint {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--txt4);
-    font-style: italic;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--txt4); font-style: italic;
   }
-  .empty-hint i {
-    font-size: 14px;
-    color: var(--txt4);
-  }
+  .empty-hint i { font-size: 14px; color: var(--txt4); }
 
   /* ── Animations ──────────────────────────────────────────── */
   @keyframes lineFlash {
-    0% {
-      background: rgba(0, 229, 160, 0.22);
-    }
-    100% {
-      background: rgba(0, 229, 160, 0.08);
-    }
+    0%   { background: rgba(0,229,160,0.22); }
+    100% { background: rgba(0,229,160,0.08); }
   }
-  .code-line.active {
-    animation: lineFlash 0.35s ease forwards;
-  }
+  .code-line.active { animation: lineFlash 0.35s ease forwards; }
 
   @keyframes cellPop {
-    0% {
-      transform: scale(1.1);
-    }
-    60% {
-      transform: scale(0.96);
-    }
-    100% {
-      transform: scale(1);
-    }
+    0%   { transform: scale(1.1); }
+    60%  { transform: scale(0.96); }
+    100% { transform: scale(1); }
   }
-  .array-cell.found {
-    animation: cellPop 0.3s ease;
-  }
+  .array-cell.found { animation: cellPop 0.3s ease; }
 
   @keyframes explanationSlide {
-    from {
-      opacity: 0;
-      transform: translateY(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  #step-explanation {
-    animation: explanationSlide 0.2s ease;
-  }
+  #step-explanation { animation: explanationSlide 0.2s ease; }
 
   @keyframes varFlash {
-    0% {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px var(--accent-glow);
-    }
-    100% {
-      border-color: var(--border);
-      box-shadow: none;
-    }
+    0%   { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+    100% { border-color: var(--border); box-shadow: none; }
   }
-  .var-card.changed {
-    animation: varFlash 0.5s ease forwards;
-  }
+  .var-card.changed { animation: varFlash 0.5s ease forwards; }
 
-  /* ── Progress fill track ─────────────────────────────────── */
   .progress-track {
-    flex: 1;
-    max-width: 160px;
-    height: 3px;
-    background: var(--surface3);
-    border-radius: 99px;
-    overflow: hidden;
+    flex: 1; max-width: 160px; height: 3px;
+    background: var(--surface3); border-radius: 99px; overflow: hidden;
   }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), #00b8ff);
-    border-radius: 99px;
-    transition: width 0.3s ease;
+    border-radius: 99px; transition: width 0.3s ease;
     box-shadow: 0 0 8px var(--accent-glow);
   }
 
-  /* ── Stack frame depth badge ─────────────────────────────── */
   .stack-frame-depth {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 99px;
-    background: var(--accent-dim);
-    color: var(--accent);
+    font-size: 10px; padding: 2px 7px; border-radius: 99px;
+    background: var(--accent-dim); color: var(--accent);
     font-family: "DM Mono", monospace;
-    border: 1px solid rgba(0, 229, 160, 0.2);
+    border: 1px solid rgba(0,229,160,0.2); flex-shrink: 0;
+  }
+
+  #graph-tooltip {
+    position: fixed; display: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 9px;
+    font-size: 11px; font-family: "DM Mono", monospace;
+    color: var(--txt2); z-index: 500; max-width: 220px;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  @media (max-width: 1200px) and (min-width: 769px) {
+    .code-line .ln-body { font-size: 12px; }
+    .panel-header { font-size: 12px; }
+  }
+  @media (max-width: 768px) {
+    .code-line .ln-body { font-size: 11px; }
+    .ln-num { font-size: 10px; min-width: 28px; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     NEW: Pre-run placeholder
+   ═══════════════════════════════════════════════════════════ */
+  .pre-run-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--txt4);
+  }
+  .pre-run-placeholder .placeholder-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: var(--txt3);
+    opacity: 0.6;
+  }
+  .pre-run-placeholder p {
+    font-size: 11px; line-height: 1.5;
+    margin: 0; color: var(--txt4); font-style: italic;
+  }
+
+  /* ── Collapsible runtime sections ────────────────────────── */
+  .runtime-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* hidden by default */
+    display: none;
+  }
+  .runtime-sections.visible {
+    display: flex;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     NEW: Flow graph (snake / S-curve layout)
+   ═══════════════════════════════════════════════════════════ */
+  #flow-graph-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 10px 12px 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+  }
+
+  #flow-graph-svg {
+    display: block;
+    min-height: 60px;
+  }
+
+  /* node styles */
+  .fg-node {
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .fg-node:hover { filter: brightness(1.3); }
+  .fg-node circle {
+    stroke-width: 2;
+    transition: r 0.15s, stroke 0.15s;
+  }
+  .fg-node.fg-current circle {
+    stroke: #00B8FF;
+    filter: drop-shadow(0 0 6px #00B8FF88);
+  }
+  .fg-node.fg-visited circle { stroke: #00e5a0; }
+  .fg-node.fg-arr circle    { stroke: #f5a623; }
+  .fg-node.fg-var circle    { stroke: #e056d9; }
+  .fg-node.fg-pending circle { stroke: #555; }
+
+  .fg-connector {
+    stroke-width: 1.5;
+    fill: none;
+    stroke: rgba(255,255,255,0.12);
+  }
+  .fg-connector.fg-done {
+    stroke: #00e5a0;
+    stroke-width: 2;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     NEW: Explanation card — document-style headings
+   ═══════════════════════════════════════════════════════════ */
+  /* Collapsible "how it works" card */
+  #explanation-card .viz-section-head {
+    cursor: pointer;
+    user-select: none;
+  }
+  #explanation-card .viz-section-head:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  .expl-toggle-icon {
+    transition: transform 0.25s ease;
+    font-size: 13px;
+    color: var(--txt3);
+  }
+  .expl-toggle-icon.open { transform: rotate(180deg); }
+
+  .expl-body-wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .expl-body-wrap.expanded {
+    max-height: 1200px; /* large enough */
+  }
+
+  /* Document-style rendered explanation */
+  #code-explanation-text {
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: var(--txt2);
+    font-family: inherit;
+  }
+
+  /* Heading blocks injected by JS */
+  .expl-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 6px;
+    padding: 0;
+  }
+  .expl-heading:first-child { margin-top: 0; }
+
+  .expl-heading-pill {
+    font-size: 9px;
+    font-family: "DM Mono", monospace;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 99px;
     flex-shrink: 0;
   }
 
-  /* ── Graph tooltip ───────────────────────────────────────── */
-  #graph-tooltip {
-    position: fixed;
-    display: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 5px 9px;
-    font-size: 11px;
-    font-family: "DM Mono", monospace;
-    color: var(--txt2);
-    z-index: 500;
-    max-width: 220px;
-    pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  .expl-heading-approach .expl-heading-pill {
+    background: rgba(0,229,160,0.12);
+    color: #00e5a0;
+    border: 1px solid rgba(0,229,160,0.25);
+  }
+  .expl-heading-steps .expl-heading-pill {
+    background: rgba(0,184,255,0.12);
+    color: #00b8ff;
+    border: 1px solid rgba(0,184,255,0.25);
+  }
+  .expl-heading-insight .expl-heading-pill {
+    background: rgba(245,166,35,0.12);
+    color: #f5a623;
+    border: 1px solid rgba(245,166,35,0.25);
+  }
+  .expl-heading-complexity .expl-heading-pill {
+    background: rgba(224,86,217,0.12);
+    color: #e056d9;
+    border: 1px solid rgba(224,86,217,0.25);
   }
 
-  /* ── Code font on tablet ─────────────────────────────────── */
-  @media (max-width: 1200px) and (min-width: 769px) {
-    .code-line .ln-body {
-      font-size: 12px;
-    }
-    .panel-header {
-      font-size: 12px;
-    }
+  .expl-heading-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
-  @media (max-width: 768px) {
-    .code-line .ln-body {
-      font-size: 11px;
-    }
-    .ln-num {
-      font-size: 10px;
-      min-width: 28px;
-    }
+
+  .expl-steps-list {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .expl-steps-list li {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; line-height: 1.6; color: var(--txt2);
+  }
+  .expl-step-num {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 9px; font-weight: 700;
+    font-family: "DM Mono", monospace;
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+
+  .expl-complexity-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .expl-complexity-chip {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--txt2);
+  }
+  .expl-complexity-chip span {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .expl-prose {
+    font-size: 12px;
+    color: var(--txt2);
+    line-height: 1.7;
+    margin: 0 0 6px;
   }
 </style>
 {% endblock %} {% block content %}
 
 <!-- ── Off-canvas overlay ──────────────────────────────── -->
-<div
-  class="sidebar-overlay"
-  id="sidebar-overlay"
-  onclick="closeSidebar()"
-></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- ── Graph tooltip ──────────────────────────────────── -->
 <div id="graph-tooltip"></div>
@@ -604,13 +613,7 @@
 <!-- ── Topbar ─────────────────────────────────────────── -->
 <header class="topbar">
   <div class="topbar-brand">
-    <!-- Hamburger (mobile only) -->
-    <button
-      class="hamburger-btn"
-      id="hamburger-btn"
-      onclick="toggleSidebar()"
-      aria-label="Toggle sidebar"
-    >
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
       <i class="ti ti-menu-2"></i>
     </button>
     <div class="brand-icon">
@@ -623,31 +626,16 @@
   </div>
 
   <div class="topbar-center">
-    <select
-      class="topbar-select"
-      id="problem-selector"
-      onchange="window.location.href = '/problem/' + this.value"
-    >
+    <select class="topbar-select" id="problem-selector" onchange="window.location.href = '/problem/' + this.value">
       <option value="">Jump to problem…</option>
       {% for p in problems %}
-      <option
-        value="{{ p.slug }}"
-        {%
-        if
-        p.id=""
-        ="problem.id"
-        %}selected{%
-        endif
-        %}
-      >
+      <option value="{{ p.slug }}" {% if p.id == problem.id %}selected{% endif %}>
         {{ p.leetcode_id }}. {{ p.title }} ({{ p.get_difficulty_display }})
       </option>
       {% endfor %}
     </select>
 
-    <span
-      class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}"
-    >
+    <span class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
       {{ problem.get_difficulty_display }}
     </span>
 
@@ -661,12 +649,7 @@
 
   <div class="topbar-end">
     <span class="input-label">Custom input</span>
-    <input
-      class="topbar-input"
-      id="custom-input"
-      type="text"
-      placeholder="e.g. [2,7,11,15], target=9"
-    />
+    <input class="topbar-input" id="custom-input" type="text" placeholder="e.g. [2,7,11,15], target=9" />
   </div>
 </header>
 
@@ -675,15 +658,10 @@
   <div class="sidebar-section-label">Problems</div>
   <div class="problem-list">
     {% for p in problems %}
-    <a
-      href="{% url 'detail' p.slug %}"
-      class="problem-item {% if p.id == problem.id %}active{% endif %}"
-    >
+    <a href="{% url 'detail' p.slug %}" class="problem-item {% if p.id == problem.id %}active{% endif %}">
       <span class="pi-num">{{ p.leetcode_id }}</span>
       <span class="pi-title">{{ p.title }}</span>
-      <span
-        class="pi-diff {% if p.difficulty == 'easy' %}badge-easy{% elif p.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}"
-      >
+      <span class="pi-diff {% if p.difficulty == 'easy' %}badge-easy{% elif p.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
         {{ p.get_difficulty_display|slice:":1" }}
       </span>
     </a>
@@ -704,6 +682,7 @@
 <!-- ── Main: code + visualizer ───────────────────────── -->
 <main class="main-content">
   <div class="main-split">
+
     <!-- Left: Code panel -->
     <div class="code-panel" id="code-panel">
       <div class="panel-header">
@@ -711,22 +690,11 @@
         solution.py
         <div class="topbar-file-tag">
           <i class="ti ti-hash"></i>
-          <span
-            style="
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            "
-          >
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
             {{ problem.leetcode_id }}. {{ problem.title }}
           </span>
         </div>
-        <button
-          class="code-toggle"
-          id="code-toggle"
-          onclick="toggleCodePanel()"
-          aria-label="Toggle code"
-        >
+        <button class="code-toggle" id="code-toggle" onclick="toggleCodePanel()" aria-label="Toggle code">
           <i class="ti ti-chevron-up" id="code-toggle-icon"></i>
         </button>
       </div>
@@ -745,162 +713,133 @@
       <div class="panel-header">
         <i class="ti ti-cpu" aria-hidden="true"></i>
         execution state
-        <span
-          id="exec-status"
-          style="
-            margin-left: auto;
-            font-size: 10px;
-            color: var(--txt4);
-            font-family: &quot;DM Mono&quot;, monospace;
-            letter-spacing: 0.04em;
-          "
-        >
+        <span id="exec-status" style="margin-left:auto;font-size:10px;color:var(--txt4);font-family:'DM Mono',monospace;letter-spacing:0.04em;">
           idle
         </span>
       </div>
+
       <div class="viz-scroll" id="viz-scroll">
-        <!-- ── Execution Progress Graph ─────────────────── -->
-        <div class="viz-section" id="progress-graph-section">
-          <div class="viz-section-head">
-            <span class="section-label">execution graph</span>
-            <span class="graph-step-counter" id="graph-counter">— / —</span>
-          </div>
-          <div style="padding: 10px 12px 0">
-            <canvas id="step-graph-canvas" height="70"></canvas>
-          </div>
-          <div class="graph-legend">
-            <span
-              ><span class="legend-dot" style="background: #888"></span
-              >pending</span
-            >
-            <span
-              ><span class="legend-dot" style="background: #00e5a0"></span
-              >visited</span
-            >
-            <span
-              ><span class="legend-dot" style="background: #00b8ff"></span
-              >current</span
-            >
-            <span
-              ><span class="legend-dot" style="background: #f5a623"></span>arr
-              change</span
-            >
-            <span
-              ><span class="legend-dot" style="background: #e056d9"></span>var
-              change</span
-            >
-          </div>
-        </div>
 
-        <!-- Array visualization -->
-        <div class="viz-section">
-          <div class="viz-section-head">
-            <span class="section-label">array state</span>
-            <span class="section-count" id="arr-count">—</span>
+        <!-- ═══════════════════════════════════════════════════
+             HOW IT WORKS — always visible, collapsible
+        ════════════════════════════════════════════════════ -->
+        <div class="viz-section" id="explanation-card">
+          <div class="viz-section-head" onclick="toggleExplanation()" style="cursor:pointer;">
+            <i class="ti ti-brain" style="color:var(--accent);font-size:13px;flex-shrink:0;"></i>
+            <span class="section-label">how it works</span>
+            <!-- Language toggle (stop click propagation) -->
+            <div style="display:flex;gap:4px;margin-left:auto;" onclick="event.stopPropagation()">
+              <button id="lang-en" onclick="switchLang('en')" style="font-size:10px;padding:2px 8px;border-radius:99px;cursor:pointer;background:var(--accent);color:#000;border:none;font-weight:700;font-family:'DM Mono',monospace;transition:all 0.2s;">EN</button>
+              <button id="lang-hi" onclick="switchLang('hi')" style="font-size:10px;padding:2px 8px;border-radius:99px;cursor:pointer;background:var(--surface2);color:var(--txt3);border:1px solid var(--border);font-weight:700;font-family:'DM Mono',monospace;transition:all 0.2s;">HI</button>
+            </div>
+            <i class="ti ti-chevron-down expl-toggle-icon" id="expl-toggle-icon"></i>
           </div>
-          <div class="viz-section-body">
-            <div class="array-visual" id="array-visualization">
-              <span class="empty-hint">
-                <i class="ti ti-layout-grid-add"></i>
-                Run or Step to see array state
-              </span>
+          <!-- Collapsible body -->
+          <div class="expl-body-wrap" id="expl-body-wrap">
+            <div class="viz-section-body" style="padding:14px 16px;min-height:60px;">
+              <div id="code-explanation-text"></div>
+              <span id="explanation-cursor" style="display:inline-block;width:2px;height:14px;background:var(--accent);margin-left:2px;vertical-align:middle;animation:cursorBlink 0.8s step-end infinite;"></span>
             </div>
           </div>
         </div>
 
-        <!-- Variables -->
-        <div class="viz-section">
-          <div class="viz-section-head">
-            <span class="section-label">variables</span>
-            <span class="section-count" id="var-count">—</span>
-          </div>
-          <div class="viz-section-body">
-            <div class="vars-grid" id="variables-grid">
-              <div class="empty-hint" style="grid-column: 1/-1">
-                <i class="ti ti-variable"></i>
-                No variables yet — click Step or Run.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step explanation -->
+        <!-- ═══════════════════════════════════════════════════
+             STEP EXPLANATION — always visible after run
+        ════════════════════════════════════════════════════ -->
         <div class="viz-section">
           <div class="viz-section-head">
             <span class="section-label">step explanation</span>
           </div>
-          <div class="viz-section-body" style="padding: 0">
-            <div
-              class="step-explanation"
-              id="step-explanation"
-              style="
-                border-radius: 0;
-                border: none;
-                border-left: 3px solid var(--accent);
-              "
-            >
-              Ready to visualize. Click <strong>Run</strong> or
-              <strong>Step →</strong> to begin.
+          <div class="viz-section-body" style="padding:0">
+            <div class="step-explanation" id="step-explanation" style="border-radius:0;border:none;border-left:3px solid var(--accent);">
+              Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.
             </div>
           </div>
-        </div>
-        <!-- ── Code Explanation ───────────────────────────────── -->
-        <div class="viz-section" id="explanation-card">
-            <div class="viz-section-head">
-                <i class="ti ti-brain" style="color:var(--accent);font-size:13px;"></i>
-                <span class="section-label">how it works</span>
-                <!-- Language toggle -->
-                <div style="display:flex;gap:4px;margin-left:auto;">
-                    <button id="lang-en" onclick="switchLang('en')" style="
-                        font-size:10px;padding:2px 8px;border-radius:99px;cursor:pointer;
-                        background:var(--accent);color:#000;border:none;font-weight:700;
-                        font-family:'DM Mono',monospace;transition:all 0.2s;">EN</button>
-                    <button id="lang-hi" onclick="switchLang('hi')" style="
-                        font-size:10px;padding:2px 8px;border-radius:99px;cursor:pointer;
-                        background:var(--surface2);color:var(--txt3);
-                        border:1px solid var(--border);font-weight:700;
-                        font-family:'DM Mono',monospace;transition:all 0.2s;">HI</button>
-                </div>
-            </div>
-            <div class="viz-section-body" style="padding:14px 16px;min-height:80px;">
-                <div id="code-explanation-text" style="
-                    font-size:12.5px;
-                    line-height:1.75;
-                    color:var(--txt2);
-                    white-space:pre-wrap;
-                    font-family:inherit;
-                "></div>
-                <span id="explanation-cursor" style="
-                    display:inline-block;
-                    width:2px;height:14px;
-                    background:var(--accent);
-                    margin-left:2px;
-                    vertical-align:middle;
-                    animation:cursorBlink 0.8s step-end infinite;
-                "></span>
-            </div>
         </div>
 
-        <!-- Call stack -->
-        <div class="viz-section">
-          <div class="viz-section-head">
-            <span class="section-label">call stack</span>
+        <!-- ═══════════════════════════════════════════════════
+             PRE-RUN placeholder (shown before first run)
+        ════════════════════════════════════════════════════ -->
+        <div id="pre-run-placeholder" class="viz-section">
+          <div class="pre-run-placeholder">
+            <div class="placeholder-icon">
+              <i class="ti ti-player-play"></i>
+            </div>
+            <p>Press <strong style="color:var(--accent)">Run</strong> or <strong style="color:var(--accent)">Step →</strong> to start the visualizer.<br>Execution graph, array state, variables &amp; call stack will appear here.</p>
           </div>
-          <div class="viz-section-body">
-            <div class="call-stack" id="call-stack-display">
-              <div class="stack-frame">
-                <span>module.__main__</span>
-                <span class="frame-line">line —</span>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             RUNTIME SECTIONS (hidden until Run/Step clicked)
+        ════════════════════════════════════════════════════ -->
+        <div class="runtime-sections" id="runtime-sections">
+
+          <!-- Execution Flow Graph -->
+          <div class="viz-section" id="progress-graph-section">
+            <div class="viz-section-head">
+              <span class="section-label">execution flow</span>
+              <span class="graph-step-counter" id="graph-counter">— / —</span>
+            </div>
+            <div id="flow-graph-wrapper">
+              <svg id="flow-graph-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+            <div class="graph-legend">
+              <span><span class="legend-dot" style="background:#888"></span>pending</span>
+              <span><span class="legend-dot" style="background:#00e5a0"></span>visited</span>
+              <span><span class="legend-dot" style="background:#00b8ff"></span>current</span>
+              <span><span class="legend-dot" style="background:#f5a623"></span>arr change</span>
+              <span><span class="legend-dot" style="background:#e056d9"></span>var change</span>
+            </div>
+          </div>
+
+          <!-- Array visualization -->
+          <div class="viz-section">
+            <div class="viz-section-head">
+              <span class="section-label">array state</span>
+              <span class="section-count" id="arr-count">—</span>
+            </div>
+            <div class="viz-section-body">
+              <div class="array-visual" id="array-visualization">
+                <span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data yet</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <!-- /viz-scroll -->
-    </div>
-    <!-- /viz-panel -->
-  </div>
-  <!-- /main-split -->
+
+          <!-- Variables -->
+          <div class="viz-section">
+            <div class="viz-section-head">
+              <span class="section-label">variables</span>
+              <span class="section-count" id="var-count">—</span>
+            </div>
+            <div class="viz-section-body">
+              <div class="vars-grid" id="variables-grid">
+                <div class="empty-hint" style="grid-column:1/-1">
+                  <i class="ti ti-variable"></i>No variables yet.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Call stack -->
+          <div class="viz-section">
+            <div class="viz-section-head">
+              <span class="section-label">call stack</span>
+            </div>
+            <div class="viz-section-body">
+              <div class="call-stack" id="call-stack-display">
+                <div class="stack-frame">
+                  <span>module.__main__</span>
+                  <span class="frame-line">line —</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /runtime-sections -->
+
+      </div><!-- /viz-scroll -->
+    </div><!-- /viz-panel -->
+  </div><!-- /main-split -->
 </main>
 
 <!-- ── Sidebar footer ────────────────────────────────── -->
@@ -922,77 +861,62 @@
   </button>
 
   <div class="speed-group">
-    <i class="ti ti-gauge" style="font-size: 14px" aria-hidden="true"></i>
+    <i class="ti ti-gauge" style="font-size:14px" aria-hidden="true"></i>
     <span>Speed</span>
-    <input
-      type="range"
-      id="speed-control"
-      min="1"
-      max="5"
-      value="3"
-      style="touch-action: none"
-    />
-    <span
-      id="speed-value"
-      style="
-        font-family: &quot;DM Mono&quot;, monospace;
-        font-size: 11px;
-        color: var(--accent);
-      "
-      >3×</span
-    >
+    <input type="range" id="speed-control" min="1" max="5" value="3" style="touch-action:none" />
+    <span id="speed-value" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">3×</span>
   </div>
 
-  <div class="progress-track" id="progress-track" style="display: none">
-    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  <div class="progress-track" id="progress-track" style="display:none">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
   </div>
 
   <div class="step-counter">
     Step <span id="current-step">—</span> / <span id="total-steps">—</span>
   </div>
 
-  <span class="output-tag" id="output-tag" style="display: none">✓ Done</span>
+  <span class="output-tag" id="output-tag" style="display:none">✓ Done</span>
 </div>
 
 {% endblock %} {% block extra_js %}
 <script>
   // ═══════════════════════════════════════════════════════════
-  //  AlgoScope detail.html — full JS refactor
+  //  AlgoScope detail.html — flow graph + doc-style explanation
   // ═══════════════════════════════════════════════════════════
 
   // ── State ─────────────────────────────────────────────────
-  let executionSteps = [];
+  let executionSteps  = [];
   let currentStepIndex = -1;
-  let isRunning = false;
-  let autoTimer = null;
-  let prevLocals = {};
-  let visitedSteps = new Set();
-  let stepMeta = []; // per-step metadata: {hasArrayChange, hasVarChange}
+  let isRunning        = false;
+  let autoTimer        = null;
+  let prevLocals       = {};
+  let visitedSteps     = new Set();
+  let stepMeta         = [];
 
   // ── DOM refs ───────────────────────────────────────────────
-  const codeLines = document.querySelectorAll(".code-line");
-  const varGrid = document.getElementById("variables-grid");
-  const arrVis = document.getElementById("array-visualization");
-  const stackDisplay = document.getElementById("call-stack-display");
-  const stepMsg = document.getElementById("step-explanation");
-  const curStepEl = document.getElementById("current-step");
-  const totStepEl = document.getElementById("total-steps");
-  const resetBtn = document.getElementById("reset-btn");
-  const runBtn = document.getElementById("run-btn");
-  const stepBtn = document.getElementById("step-btn");
-  const speedSlider = document.getElementById("speed-control");
-  const speedLabel = document.getElementById("speed-value");
-  const outputTag = document.getElementById("output-tag");
-  const execStatus = document.getElementById("exec-status");
-  const progressTrack = document.getElementById("progress-track");
-  const progressFill = document.getElementById("progress-fill");
-  const arrCount = document.getElementById("arr-count");
-  const varCount = document.getElementById("var-count");
-  const graphCounter = document.getElementById("graph-counter");
-  const canvas = document.getElementById("step-graph-canvas");
-  const ctx = canvas.getContext("2d");
-  const tooltip = document.getElementById("graph-tooltip");
-  const problemSlug = "{{ problem.slug }}";
+  const codeLines      = document.querySelectorAll(".code-line");
+  const varGrid        = document.getElementById("variables-grid");
+  const arrVis         = document.getElementById("array-visualization");
+  const stackDisplay   = document.getElementById("call-stack-display");
+  const stepMsg        = document.getElementById("step-explanation");
+  const curStepEl      = document.getElementById("current-step");
+  const totStepEl      = document.getElementById("total-steps");
+  const resetBtn       = document.getElementById("reset-btn");
+  const runBtn         = document.getElementById("run-btn");
+  const stepBtn        = document.getElementById("step-btn");
+  const speedSlider    = document.getElementById("speed-control");
+  const speedLabel     = document.getElementById("speed-value");
+  const outputTag      = document.getElementById("output-tag");
+  const execStatus     = document.getElementById("exec-status");
+  const progressTrack  = document.getElementById("progress-track");
+  const progressFill   = document.getElementById("progress-fill");
+  const arrCount       = document.getElementById("arr-count");
+  const varCount       = document.getElementById("var-count");
+  const graphCounter   = document.getElementById("graph-counter");
+  const tooltip        = document.getElementById("graph-tooltip");
+  const runtimeSections = document.getElementById("runtime-sections");
+  const preRunPlaceholder = document.getElementById("pre-run-placeholder");
+  const problemSlug    = "{{ problem.slug }}";
 
   // ── Helpers ────────────────────────────────────────────────
   function esc(text) {
@@ -1008,23 +932,16 @@
 
   function updateProgress() {
     if (!executionSteps.length) return;
-    const pct = (
-      ((currentStepIndex + 1) / executionSteps.length) *
-      100
-    ).toFixed(1);
+    const pct = (((currentStepIndex + 1) / executionSteps.length) * 100).toFixed(1);
     progressFill.style.width = pct + "%";
   }
 
-  /** Sanitize function references and very long values */
   function sanitizeValue(val) {
     if (typeof val !== "string") val = String(val);
-    // Truncate Python function repr: <function foo at 0x...>
     const fnMatch = val.match(/^<function\s+(\S+)\s+at\s+0x[0-9a-fA-F]+>$/);
     if (fnMatch) return `func ${fnMatch[1]}()`;
-    // Truncate built-in method reprs
     const bmMatch = val.match(/^<built-in\s+\S+\s+(\S+)>$/);
     if (bmMatch) return `builtin ${bmMatch[1]}()`;
-    // Truncate any other <...at 0x...>
     if (/<.+at 0x[0-9a-fA-F]+>/.test(val)) {
       return val.replace(/<([^>]+)\s+at\s+0x[0-9a-fA-F]+>/g, (_, inner) => {
         const name = inner.split(" ").pop();
@@ -1035,7 +952,7 @@
   }
 
   function highlightLine(lineNum) {
-    codeLines.forEach((el) => {
+    codeLines.forEach(el => {
       el.classList.remove("active");
       if (parseInt(el.dataset.line) === lineNum) {
         el.classList.add("active");
@@ -1044,35 +961,29 @@
     });
   }
 
-  // ── CSS var reader for graph colors ───────────────────────
-  function cssVar(name) {
-    return (
-      getComputedStyle(document.documentElement)
-        .getPropertyValue(name)
-        .trim() || "#888"
-    );
+  // ── Show runtime sections ──────────────────────────────────
+  function showRuntimeSections() {
+    preRunPlaceholder.style.display = "none";
+    runtimeSections.classList.add("visible");
   }
 
-  // ── Pre-process step metadata after fetch ─────────────────
+  // ── Pre-process step metadata ─────────────────────────────
   function buildStepMeta() {
     stepMeta = [];
     let prevLoc = {};
     for (let i = 0; i < executionSteps.length; i++) {
       const step = executionSteps[i];
-      const loc = step.locals || {};
-      let hasArr = false,
-        hasVar = false;
+      const loc  = step.locals || {};
+      let hasArr = false, hasVar = false;
       for (const [k, v] of Object.entries(loc)) {
         if (prevLoc[k] !== undefined && prevLoc[k] !== v) {
           try {
             const parsed = JSON.parse(v);
             if (Array.isArray(parsed)) hasArr = true;
             else hasVar = true;
-          } catch {
-            hasVar = true;
-          }
+          } catch { hasVar = true; }
         } else if (prevLoc[k] === undefined) {
-          hasVar = true; // new variable
+          hasVar = true;
         }
       }
       stepMeta.push({ hasArr, hasVar });
@@ -1080,195 +991,153 @@
     }
   }
 
-  // ── Canvas graph ───────────────────────────────────────────
-  function drawGraph() {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // ═══════════════════════════════════════════════════════════
+  //  FLOW GRAPH — snake / S-curve layout
+  // ═══════════════════════════════════════════════════════════
+  const FLOW_NODE_R    = 7;
+  const FLOW_COL_W     = 36;   // horizontal spacing between nodes
+  const FLOW_ROW_H     = 54;   // vertical spacing between rows
+  const FLOW_NODES_PER_ROW = 10; // how many nodes per row before wrapping
+  const FLOW_PAD_X     = 16;
+  const FLOW_PAD_Y     = 18;
 
-    const W = rect.width,
-      H = rect.height;
+  const flowSvg = document.getElementById("flow-graph-svg");
+
+  function getNodePos(idx) {
+    const row = Math.floor(idx / FLOW_NODES_PER_ROW);
+    const col = idx % FLOW_NODES_PER_ROW;
+    // Odd rows go right-to-left (snake)
+    const actualCol = (row % 2 === 0) ? col : (FLOW_NODES_PER_ROW - 1 - col);
+    const x = FLOW_PAD_X + actualCol * FLOW_COL_W;
+    const y = FLOW_PAD_Y + row * FLOW_ROW_H;
+    return { x, y };
+  }
+
+  function buildFlowGraph() {
     const n = executionSteps.length;
-    ctx.clearRect(0, 0, W, H);
+    if (!n) { flowSvg.innerHTML = ""; return; }
 
-    if (!n) {
-      ctx.fillStyle = cssVar("--txt4") || "#555";
-      ctx.font = '11px "DM Mono", monospace';
-      ctx.fillText("Run or Step to see graph", 12, H / 2 + 4);
-      return;
-    }
+    const totalRows = Math.ceil(n / FLOW_NODES_PER_ROW);
+    const svgW = FLOW_PAD_X * 2 + (Math.min(n, FLOW_NODES_PER_ROW) - 1) * FLOW_COL_W + FLOW_NODE_R * 2;
+    const svgH = FLOW_PAD_Y * 2 + (totalRows - 1) * FLOW_ROW_H + FLOW_NODE_R * 2;
 
-    const padX = 16,
-      padY = 14;
-    const usableW = W - padX * 2;
-    const cy = H / 2;
+    flowSvg.setAttribute("viewBox", `0 0 ${svgW} ${svgH}`);
+    flowSvg.setAttribute("width",  svgW);
+    flowSvg.setAttribute("height", svgH);
+    flowSvg.innerHTML = "";
 
-    // Step positions
-    const xs =
-      n === 1
-        ? [padX + usableW / 2]
-        : executionSteps.map((_, i) => padX + (i / (n - 1)) * usableW);
+    // ── Defs (glow filter) ─────────────────────────────────
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    defs.innerHTML = `
+      <filter id="glow-blue" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    `;
+    flowSvg.appendChild(defs);
 
-    // Draw connector line
-    ctx.beginPath();
-    ctx.moveTo(xs[0], cy);
-    xs.forEach((x) => ctx.lineTo(x, cy));
-    ctx.strokeStyle = "rgba(255,255,255,0.08)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // ── Connector paths ───────────────────────────────────
+    for (let i = 0; i < n - 1; i++) {
+      const a = getNodePos(i);
+      const b = getNodePos(i + 1);
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
-    // Progress fill line
-    if (currentStepIndex >= 0) {
-      ctx.beginPath();
-      ctx.moveTo(xs[0], cy);
-      for (let i = 0; i <= Math.min(currentStepIndex, n - 1); i++) {
-        ctx.lineTo(xs[i], cy);
+      let d;
+      const sameRow = Math.floor(i / FLOW_NODES_PER_ROW) === Math.floor((i + 1) / FLOW_NODES_PER_ROW);
+      if (sameRow) {
+        // straight horizontal connector
+        d = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
+      } else {
+        // wrap: curve down from end-of-row to start of next row
+        // a = last node in row, b = first node in next row
+        const midY = (a.y + b.y) / 2;
+        d = `M ${a.x} ${a.y} C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
       }
-      ctx.strokeStyle = "#00e5a0";
-      ctx.lineWidth = 2;
-      ctx.stroke();
+
+      path.setAttribute("d", d);
+      path.setAttribute("class", visitedSteps.has(i) && visitedSteps.has(i + 1)
+        ? "fg-connector fg-done"
+        : "fg-connector");
+      path.setAttribute("id", `fg-path-${i}`);
+      flowSvg.appendChild(path);
     }
 
-    // Draw nodes
-    const r = Math.max(4, Math.min(8, usableW / n / 2 - 1));
+    // ── Nodes ──────────────────────────────────────────────
     for (let i = 0; i < n; i++) {
-      const x = xs[i];
-      const meta = stepMeta[i] || {};
-      const isCurrent = i === currentStepIndex;
-      const isVisited = visitedSteps.has(i);
+      const { x, y } = getNodePos(i);
+      const meta    = stepMeta[i] || {};
+      const isCurr  = i === currentStepIndex;
+      const isVisit = visitedSteps.has(i);
 
-      let fillColor = "#444";
-      if (meta.hasArr) fillColor = "#f5a623";
-      else if (meta.hasVar) fillColor = "#e056d9";
-      if (isVisited)
-        fillColor =
-          isVisited && !meta.hasArr && !meta.hasVar ? "#00e5a0" : fillColor;
-      if (isCurrent) fillColor = "#00B8FF";
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("class", [
+        "fg-node",
+        isCurr  ? "fg-current"  : "",
+        isVisit && !isCurr ? "fg-visited" : "",
+        !isVisit && meta.hasArr ? "fg-arr" : "",
+        !isVisit && meta.hasVar ? "fg-var" : "",
+        !isVisit && !meta.hasArr && !meta.hasVar ? "fg-pending" : "",
+      ].join(" ").trim());
+      g.setAttribute("data-idx", i);
 
-      // Glow ring for current
-      if (isCurrent) {
-        ctx.beginPath();
-        ctx.arc(x, cy, r + 5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,184,255,0.18)";
-        ctx.fill();
+      // Glow ring for current step
+      if (isCurr) {
+        const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ring.setAttribute("cx", x); ring.setAttribute("cy", y);
+        ring.setAttribute("r", FLOW_NODE_R + 5);
+        ring.setAttribute("fill", "rgba(0,184,255,0.15)");
+        g.appendChild(ring);
       }
 
-      ctx.beginPath();
-      ctx.arc(x, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = fillColor;
-      ctx.fill();
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", x); circle.setAttribute("cy", y);
+      circle.setAttribute("r", FLOW_NODE_R);
 
-      // Small step number label (only if not too crowded)
-      if (n <= 30) {
-        ctx.fillStyle = isCurrent ? "#00B8FF" : "rgba(255,255,255,0.3)";
-        ctx.font = `9px "DM Mono", monospace`;
-        ctx.textAlign = "center";
-        ctx.fillText(i + 1, x, cy + r + 11);
+      // Fill color
+      let fill = "#333";
+      if (isVisit) fill = meta.hasArr ? "#f5a623" : meta.hasVar ? "#e056d9" : "#00e5a0";
+      if (isCurr)  fill = "#00B8FF";
+      circle.setAttribute("fill", fill);
+      circle.setAttribute("stroke", isCurr ? "#00B8FF" : isVisit ? "#00e5a060" : "#555");
+      if (isCurr) circle.setAttribute("filter", "url(#glow-blue)");
+      g.appendChild(circle);
+
+      // Step label (only if ≤ 20 total, else too crowded)
+      if (n <= 20) {
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", x); lbl.setAttribute("y", y + 3.5);
+        lbl.setAttribute("text-anchor", "middle");
+        lbl.setAttribute("font-size", "7");
+        lbl.setAttribute("font-family", "DM Mono, monospace");
+        lbl.setAttribute("fill", isCurr ? "#000" : "rgba(255,255,255,0.7)");
+        lbl.setAttribute("pointer-events", "none");
+        lbl.textContent = i + 1;
+        g.appendChild(lbl);
       }
-    }
-  }
 
-  // ── Tooltip on graph hover ─────────────────────────────────
-  function graphXs() {
-    const n = executionSteps.length;
-    if (!n) return [];
-    const rect = canvas.getBoundingClientRect();
-    const padX = 16,
-      usableW = rect.width - padX * 2;
-    return n === 1
-      ? [padX + usableW / 2]
-      : executionSteps.map((_, i) => padX + (i / (n - 1)) * usableW);
-  }
+      // Tooltip title
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      const step  = executionSteps[i];
+      const expl  = step.explanation ? step.explanation.replace(/<[^>]+>/g, "").slice(0, 80) : `Line ${step.line}`;
+      title.textContent = `Step ${i + 1}: ${expl}`;
+      g.appendChild(title);
 
-  canvas.addEventListener("mousemove", (e) => {
-    if (!executionSteps.length) {
-      tooltip.style.display = "none";
-      return;
-    }
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const xs = graphXs();
-    const r =
-      Math.max(
-        4,
-        Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
-      ) + 6;
-    let found = -1;
-    xs.forEach((x, i) => {
-      if (Math.abs(mx - x) < r) found = i;
-    });
-    if (found === -1) {
-      tooltip.style.display = "none";
-      return;
-    }
-    const step = executionSteps[found];
-    const expl = step.explanation
-      ? step.explanation.replace(/<[^>]+>/g, "").slice(0, 80)
-      : `Line ${step.line}`;
-    tooltip.style.display = "block";
-    tooltip.style.left = e.clientX + 12 + "px";
-    tooltip.style.top = e.clientY - 8 + "px";
-    tooltip.textContent = `Step ${found + 1}: ${expl}`;
-  });
-  canvas.addEventListener("mouseleave", () => {
-    tooltip.style.display = "none";
-  });
-
-  // ── Click-to-seek ──────────────────────────────────────────
-  canvas.addEventListener("click", (e) => {
-    if (!executionSteps.length) return;
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const xs = graphXs();
-    const r =
-      Math.max(
-        4,
-        Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
-      ) + 8;
-    let found = -1;
-    xs.forEach((x, i) => {
-      if (Math.abs(mx - x) < r) found = i;
-    });
-    if (found === -1) return;
-    currentStepIndex = found;
-    visitedSteps.add(found);
-    renderStep(found);
-    if (found === executionSteps.length - 1) finishExecution();
-  });
-
-  // Touch support for graph seek
-  canvas.addEventListener(
-    "touchend",
-    (e) => {
-      if (!executionSteps.length) return;
-      const touch = e.changedTouches[0];
-      const rect = canvas.getBoundingClientRect();
-      const mx = touch.clientX - rect.left;
-      const xs = graphXs();
-      const r =
-        Math.max(
-          4,
-          Math.min(8, (rect.width - 32) / executionSteps.length / 2 - 1),
-        ) + 10;
-      let found = -1;
-      xs.forEach((x, i) => {
-        if (Math.abs(mx - x) < r) found = i;
+      // Click-to-seek
+      g.addEventListener("click", () => {
+        currentStepIndex = i;
+        visitedSteps.add(i);
+        renderStep(i);
+        if (i === executionSteps.length - 1) finishExecution();
       });
-      if (found === -1) return;
-      e.preventDefault();
-      currentStepIndex = found;
-      visitedSteps.add(found);
-      renderStep(found);
-      if (found === executionSteps.length - 1) finishExecution();
-    },
-    { passive: false },
-  );
 
-  // Redraw on resize
-  const ro = new ResizeObserver(() => drawGraph());
-  ro.observe(canvas);
+      flowSvg.appendChild(g);
+    }
+  }
+
+  function refreshFlowGraph() {
+    buildFlowGraph();
+    graphCounter.textContent = `${currentStepIndex + 1} / ${executionSteps.length}`;
+  }
 
   // ── Array viz ──────────────────────────────────────────────
   function updateArrayViz(variables) {
@@ -1276,91 +1145,56 @@
     for (const [k, v] of Object.entries(variables)) {
       try {
         const parsed = JSON.parse(v);
-        if (Array.isArray(parsed) && parsed.length)
-          found.push({ name: k, data: parsed });
+        if (Array.isArray(parsed) && parsed.length) found.push({ name: k, data: parsed });
       } catch (_) {}
     }
     if (found.length) {
-      arrCount.textContent =
-        found.reduce((s, a) => s + a.data.length, 0) + " cells";
-      arrVis.innerHTML = found
-        .map(
-          (a) =>
-            `<div style="margin-bottom:10px;">
-                <div style="font-size:10px;color:var(--accent);margin-bottom:7px;font-weight:700;
-                            letter-spacing:0.10em;text-transform:uppercase;
-                            font-family:'DM Mono',monospace;">${esc(a.name)}</div>
-                <div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:flex-end;
-                            overflow-x:auto;padding-bottom:4px;">
-                    ${a.data
-                      .map(
-                        (v, i) =>
-                          `<div class="array-cell" style="animation-delay:${i * 0.03}s">
-                            <span style="font-size:13px">${esc(String(v))}</span>
-                        </div>`,
-                      )
-                      .join("")}
-                </div>
-            </div>`,
-        )
-        .join("");
+      arrCount.textContent = found.reduce((s, a) => s + a.data.length, 0) + " cells";
+      arrVis.innerHTML = found.map(a =>
+        `<div style="margin-bottom:10px;">
+          <div style="font-size:10px;color:var(--accent);margin-bottom:7px;font-weight:700;
+                      letter-spacing:0.10em;text-transform:uppercase;font-family:'DM Mono',monospace;">${esc(a.name)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:flex-end;overflow-x:auto;padding-bottom:4px;">
+            ${a.data.map((v, i) =>
+              `<div class="array-cell" style="animation-delay:${i * 0.03}s">
+                <span style="font-size:13px">${esc(String(v))}</span>
+              </div>`
+            ).join("")}
+          </div>
+        </div>`
+      ).join("");
     } else {
       arrCount.textContent = "—";
-      arrVis.innerHTML =
-        '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data in current scope</span>';
+      arrVis.innerHTML = '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data in current scope</span>';
     }
   }
 
   // ── Variables ──────────────────────────────────────────────
-  // ── Replace the updateVariables function in detail.html with this ──
-
   function updateVariables(variables) {
-    // Strip any injected names that slipped through
-    const INJECTED = new Set([
-      "ListNode",
-      "TreeNode",
-      "GraphNode",
-      "Optional",
-      "List",
-      "Dict",
-      "Tuple",
-      "Set",
-      "Any",
-      "Union",
-      "Solution",
-      "solution",
-    ]);
-    const filtered = Object.fromEntries(
-      Object.entries(variables).filter(([k]) => !INJECTED.has(k)),
-    );
+    const INJECTED = new Set(["ListNode","TreeNode","GraphNode","Optional","List","Dict","Tuple","Set","Any","Union","Solution","solution"]);
+    const filtered = Object.fromEntries(Object.entries(variables).filter(([k]) => !INJECTED.has(k)));
 
     if (!filtered || !Object.keys(filtered).length) {
       varCount.textContent = "—";
-      varGrid.innerHTML =
-        '<div class="empty-hint" style="grid-column:1/-1">' +
-        '<i class="ti ti-variable"></i>No variables in scope yet.</div>';
+      varGrid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables in scope yet.</div>';
       prevLocals = {};
       return;
     }
 
     varCount.textContent = Object.keys(filtered).length + " vars";
-    varGrid.innerHTML = Object.entries(filtered)
-      .map(([name, rawVal]) => {
-        const value = sanitizeValue(rawVal);
-        const changed =
-          prevLocals[name] !== undefined && prevLocals[name] !== value;
-        return `<div class="var-card${changed ? " changed" : ""}">
-            <div class="var-name">${esc(name)}</div>
-            <div class="var-value${changed ? " changed" : ""}">${esc(value)}</div>
-        </div>`;
-      })
-      .join("");
+    varGrid.innerHTML = Object.entries(filtered).map(([name, rawVal]) => {
+      const value   = sanitizeValue(rawVal);
+      const changed = prevLocals[name] !== undefined && prevLocals[name] !== value;
+      return `<div class="var-card${changed ? " changed" : ""}">
+        <div class="var-name">${esc(name)}</div>
+        <div class="var-value${changed ? " changed" : ""}">${esc(value)}</div>
+      </div>`;
+    }).join("");
 
-    prevLocals = Object.fromEntries(
-      Object.entries(filtered).map(([k, v]) => [k, sanitizeValue(v)]),
-    );
+    prevLocals = Object.fromEntries(Object.entries(filtered).map(([k, v]) => [k, sanitizeValue(v)]));
     updateArrayViz(filtered);
   }
+
   // ── Render a single step ───────────────────────────────────
   function renderStep(idx) {
     if (idx < 0 || !executionSteps.length) return;
@@ -1371,38 +1205,31 @@
     highlightLine(step.line);
     if (step.locals) updateVariables(step.locals);
 
-    stepMsg.innerHTML =
-      step.explanation ||
-      `<span style="color:var(--txt3)">Line ${step.line}: executing…</span>`;
+    stepMsg.innerHTML = step.explanation || `<span style="color:var(--txt3)">Line ${step.line}: executing…</span>`;
 
     curStepEl.textContent = idx + 1;
     updateProgress();
     setStatus("step " + (idx + 1), "var(--accent)");
-    graphCounter.textContent = `${idx + 1} / ${executionSteps.length}`;
 
     const rawFn = step.function_name || problemSlug;
     const fnName = sanitizeValue(rawFn);
-
     stackDisplay.innerHTML = `
-        <div class="stack-frame active-frame">
-            <span style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
-                <span class="stack-frame-depth">0</span>
-                <span class="stack-fn-name">${esc(fnName)}</span>
-            </span>
-            <span class="frame-line" style="flex-shrink:0">line ${step.line}</span>
-        </div>
-        <div class="stack-frame" style="opacity:0.5">
-            <span style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
-                <span style="font-size:10px;padding:2px 7px;border-radius:99px;
-                             background:var(--surface2);color:var(--txt4);
-                             border:1px solid var(--border);flex-shrink:0">1</span>
-                <span class="stack-fn-name">module.__main__</span>
-            </span>
-            <span class="frame-line" style="flex-shrink:0">line 1</span>
-        </div>`;
+      <div class="stack-frame active-frame">
+        <span style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+          <span class="stack-frame-depth">0</span>
+          <span class="stack-fn-name">${esc(fnName)}</span>
+        </span>
+        <span class="frame-line" style="flex-shrink:0">line ${step.line}</span>
+      </div>
+      <div class="stack-frame" style="opacity:0.5">
+        <span style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+          <span style="font-size:10px;padding:2px 7px;border-radius:99px;background:var(--surface2);color:var(--txt4);border:1px solid var(--border);flex-shrink:0">1</span>
+          <span class="stack-fn-name">module.__main__</span>
+        </span>
+        <span class="frame-line" style="flex-shrink:0">line 1</span>
+      </div>`;
 
-    // Redraw graph with updated current step
-    drawGraph();
+    refreshFlowGraph();
   }
 
   // ── CSRF ───────────────────────────────────────────────────
@@ -1416,12 +1243,9 @@
     const userInput = document.getElementById("custom-input")?.value || "";
     setStatus("loading…", "var(--med)");
     try {
-      const res = await fetch(`/api/run/${problemSlug}/`, {
+      const res  = await fetch(`/api/run/${problemSlug}/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCsrf(),
-        },
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf() },
         body: JSON.stringify({ input: userInput }),
       });
       const data = await res.json();
@@ -1431,24 +1255,23 @@
         graphCounter.textContent = `0 / ${executionSteps.length}`;
         progressTrack.style.display = "";
         buildStepMeta();
-        drawGraph();
+        showRuntimeSections();
+        buildFlowGraph();
         currentStepIndex = 0;
         renderStep(0);
         setStatus("ready", "var(--easy)");
         return true;
       } else {
         stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
-                <i class="ti ti-alert-circle"></i>
-                Error: ${esc(data.error || "Unknown error")}
-            </span>`;
+          <i class="ti ti-alert-circle"></i>Error: ${esc(data.error || "Unknown error")}
+        </span>`;
         setStatus("error", "var(--hard)");
         return false;
       }
     } catch (err) {
       stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
-            <i class="ti ti-wifi-off"></i>
-            Network error: ${esc(err.message)}
-        </span>`;
+        <i class="ti ti-wifi-off"></i>Network error: ${esc(err.message)}
+      </span>`;
       setStatus("error", "var(--hard)");
       return false;
     }
@@ -1456,39 +1279,32 @@
 
   // ── Controls ───────────────────────────────────────────────
   function resetAll() {
-    clearInterval(autoTimer);
-    autoTimer = null;
+    clearInterval(autoTimer); autoTimer = null;
     isRunning = false;
-    executionSteps = [];
-    currentStepIndex = -1;
-    prevLocals = {};
-    visitedSteps.clear();
-    stepMeta = [];
+    executionSteps = []; currentStepIndex = -1;
+    prevLocals = {}; visitedSteps.clear(); stepMeta = [];
 
-    curStepEl.textContent = "—";
-    totStepEl.textContent = "—";
-    varCount.textContent = "—";
-    arrCount.textContent = "—";
+    curStepEl.textContent = "—"; totStepEl.textContent = "—";
+    varCount.textContent  = "—"; arrCount.textContent  = "—";
     graphCounter.textContent = "— / —";
 
-    varGrid.innerHTML =
-      '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables yet — click Step or Run.</div>';
-    arrVis.innerHTML =
-      '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>Run or Step to see array state</span>';
-    stepMsg.innerHTML =
-      "Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.";
-    stackDisplay.innerHTML =
-      '<div class="stack-frame"><span>module.__main__</span><span class="frame-line">line —</span></div>';
+    varGrid.innerHTML   = '<div class="empty-hint" style="grid-column:1/-1"><i class="ti ti-variable"></i>No variables yet — click Step or Run.</div>';
+    arrVis.innerHTML    = '<span class="empty-hint"><i class="ti ti-layout-grid-add"></i>No array data yet</span>';
+    stepMsg.innerHTML   = 'Ready to visualize. Click <strong>Run</strong> or <strong>Step →</strong> to begin.';
+    stackDisplay.innerHTML = '<div class="stack-frame"><span>module.__main__</span><span class="frame-line">line —</span></div>';
+    flowSvg.innerHTML   = "";
 
-    outputTag.style.display = "none";
+    outputTag.style.display  = "none";
     progressTrack.style.display = "none";
     progressFill.style.width = "0%";
+    codeLines.forEach(l => l.classList.remove("active"));
 
-    codeLines.forEach((l) => l.classList.remove("active"));
-    runBtn.innerHTML =
-      '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+    // Hide runtime sections, show placeholder
+    runtimeSections.classList.remove("visible");
+    preRunPlaceholder.style.display = "";
+
+    runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
     setStatus("idle", "var(--txt4)");
-    drawGraph();
   }
 
   async function doStep() {
@@ -1502,27 +1318,22 @@
   }
 
   function finishExecution() {
-    stepMsg.innerHTML =
-      '<span style="color:var(--easy);display:flex;align-items:center;gap:6px;"><i class="ti ti-check"></i><strong>Execution complete!</strong></span> Click Reset to run again.';
-    outputTag.style.display = "";
+    stepMsg.innerHTML = '<span style="color:var(--easy);display:flex;align-items:center;gap:6px;"><i class="ti ti-check"></i><strong>Execution complete!</strong></span> Click Reset to run again.';
+    outputTag.style.display  = "";
     progressFill.style.width = "100%";
     setStatus("complete", "var(--easy)");
-    drawGraph();
+    refreshFlowGraph();
   }
 
   async function toggleRun() {
     if (isRunning) {
-      isRunning = false;
-      clearInterval(autoTimer);
-      runBtn.innerHTML =
-        '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+      isRunning = false; clearInterval(autoTimer);
+      runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
       setStatus("paused", "var(--med)");
       return;
     }
-
     isRunning = true;
-    runBtn.innerHTML =
-      '<i class="ti ti-player-pause" aria-hidden="true"></i> Pause';
+    runBtn.innerHTML = '<i class="ti ti-player-pause" aria-hidden="true"></i> Pause';
     setStatus("running", "var(--accent)");
 
     const startPlay = () => {
@@ -1530,12 +1341,9 @@
       const delay = Math.round(1200 / speed);
       autoTimer = setInterval(() => {
         if (currentStepIndex >= executionSteps.length - 1) {
-          clearInterval(autoTimer);
-          isRunning = false;
-          runBtn.innerHTML =
-            '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-          finishExecution();
-          return;
+          clearInterval(autoTimer); isRunning = false;
+          runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+          finishExecution(); return;
         }
         currentStepIndex++;
         renderStep(currentStepIndex);
@@ -1545,11 +1353,7 @@
     if (!executionSteps.length) {
       const ok = await fetchSteps();
       if (ok) startPlay();
-      else {
-        isRunning = false;
-        runBtn.innerHTML =
-          '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-      }
+      else { isRunning = false; runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run'; }
     } else {
       startPlay();
     }
@@ -1568,12 +1372,9 @@
       const delay = Math.round(1200 / parseInt(v));
       autoTimer = setInterval(() => {
         if (currentStepIndex >= executionSteps.length - 1) {
-          clearInterval(autoTimer);
-          isRunning = false;
-          runBtn.innerHTML =
-            '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
-          finishExecution();
-          return;
+          clearInterval(autoTimer); isRunning = false;
+          runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
+          finishExecution(); return;
         }
         currentStepIndex++;
         renderStep(currentStepIndex);
@@ -1581,18 +1382,14 @@
     }
   });
 
-  // Keyboard shortcuts
-  document.addEventListener("keydown", (e) => {
+  document.addEventListener("keydown", e => {
     if (e.target.tagName === "INPUT") return;
-    if (e.key === " " || e.key === "Enter") {
-      e.preventDefault();
-      toggleRun();
-    }
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRun(); }
     if (e.key === "ArrowRight" || e.key === "n") doStep();
     if (e.key === "r" || e.key === "Escape") resetAll();
   });
 
-  // ── Sidebar toggle (mobile) ────────────────────────────────
+  // ── Sidebar toggle ─────────────────────────────────────────
   function toggleSidebar() {
     const sb = document.getElementById("sidebar");
     const ov = document.getElementById("sidebar-overlay");
@@ -1603,82 +1400,178 @@
   function closeSidebar() {
     const sb = document.getElementById("sidebar");
     const ov = document.getElementById("sidebar-overlay");
-    sb.classList.remove("open");
-    ov.classList.remove("visible");
+    sb.classList.remove("open"); ov.classList.remove("visible");
     document.body.style.overflow = "";
   }
 
-  // ── Collapsible code panel (mobile) ───────────────────────
   function toggleCodePanel() {
     const panel = document.getElementById("code-panel");
-    const icon = document.getElementById("code-toggle-icon");
+    const icon  = document.getElementById("code-toggle-icon");
     panel.classList.toggle("collapsed");
-    icon.className = panel.classList.contains("collapsed")
-      ? "ti ti-chevron-down"
-      : "ti ti-chevron-up";
+    icon.className = panel.classList.contains("collapsed") ? "ti ti-chevron-down" : "ti ti-chevron-up";
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  EXPLANATION — toggle + typewriter + document rendering
+  // ═══════════════════════════════════════════════════════════
+  const explEl      = document.getElementById("code-explanation-text");
+  const cursorEl    = document.getElementById("explanation-cursor");
+  const btnEn       = document.getElementById("lang-en");
+  const btnHi       = document.getElementById("lang-hi");
+  const exBodyWrap  = document.getElementById("expl-body-wrap");
+  const exToggleIcon = document.getElementById("expl-toggle-icon");
+
+  let explCache   = { en: "", hi: "" };
+  let typeTimer   = null;
+  let currentLang = "en";
+  let exExpanded  = false;
+
+  function toggleExplanation() {
+    exExpanded = !exExpanded;
+    exBodyWrap.classList.toggle("expanded", exExpanded);
+    exToggleIcon.classList.toggle("open", exExpanded);
+  }
+
+  // ── Document-style explanation renderer ───────────────────
+  function renderExplanationDoc(raw) {
+    // Parse the structured explanation into rich HTML
+    explEl.innerHTML = "";
+    cursorEl.style.display = "none";
+
+    const lines = raw.split("\n");
+    let html = "";
+    let inSteps = false;
+    let stepItems = [];
+
+    const flushSteps = () => {
+      if (stepItems.length) {
+        html += `<ul class="expl-steps-list">` +
+          stepItems.map((s, i) =>
+            `<li><span class="expl-step-num">${i + 1}</span><span>${s}</span></li>`
+          ).join("") + `</ul>`;
+        stepItems = [];
+      }
+      inSteps = false;
+    };
+
+    for (let raw of lines) {
+      const line = raw.trim();
+      if (!line) { if (inSteps) { /* keep collecting */ } continue; }
+
+      // Detect headings: **Approach:** / **तरीका:** etc.
+      const headMatch = line.match(/^\*\*([^*:]+:?)\*\*\s*(.*)/);
+      if (headMatch) {
+        if (inSteps) flushSteps();
+        const label = headMatch[1].replace(/:$/, "").trim();
+        const rest  = headMatch[2].trim();
+
+        const lLow = label.toLowerCase();
+        let cls = "expl-heading-approach";
+        let icon = "ti-route";
+        if (lLow.includes("step") || lLow.includes("चरण")) { cls = "expl-heading-steps"; icon = "ti-list-numbers"; }
+        else if (lLow.includes("insight") || lLow.includes("बात")) { cls = "expl-heading-insight"; icon = "ti-bulb"; }
+        else if (lLow.includes("complex") || lLow.includes("जटिल")) { cls = "expl-heading-complexity"; icon = "ti-clock"; }
+
+        html += `<div class="expl-heading ${cls}">
+          <span class="expl-heading-pill"><i class="ti ${icon}" style="font-size:9px;margin-right:3px;"></i>${label}</span>
+          <span class="expl-heading-line"></span>
+        </div>`;
+
+        if (lLow.includes("step") || lLow.includes("चरण")) {
+          inSteps = true;
+        } else if (lLow.includes("complex") || lLow.includes("जटिल")) {
+          // Parse "Time: O(...) | Space: O(...)"
+          const chips = rest.split("|").map(c => c.trim()).filter(Boolean);
+          if (chips.length) {
+            html += `<div class="expl-complexity-row">` +
+              chips.map(c => {
+                const m = c.match(/^(.*?):\s*(O\(.+\))$/);
+                if (m) return `<div class="expl-complexity-chip">${m[1]}: <span>${m[2]}</span></div>`;
+                return `<div class="expl-complexity-chip">${esc(c)}</div>`;
+              }).join("") + `</div>`;
+          } else if (rest) {
+            html += `<p class="expl-prose">${esc(rest)}</p>`;
+          }
+        } else if (rest) {
+          html += `<p class="expl-prose">${esc(rest)}</p>`;
+        }
+        continue;
+      }
+
+      // Numbered list items: "1. ..."
+      const numMatch = line.match(/^\d+\.\s+(.+)/);
+      if (numMatch) {
+        if (!inSteps) inSteps = true;
+        stepItems.push(esc(numMatch[1]));
+        continue;
+      }
+
+      // Regular line
+      if (inSteps) {
+        flushSteps();
+      }
+      html += `<p class="expl-prose">${esc(line)}</p>`;
+    }
+    if (inSteps) flushSteps();
+
+    explEl.innerHTML = html;
+  }
+
+  // ── Typewriter that then renders doc ──────────────────────
+  function typewriteThenRender(text) {
+    clearInterval(typeTimer);
+    explEl.textContent = "";
+    cursorEl.style.display = "inline-block";
+    let i = 0;
+    const clean = text.replace(/\*\*(.*?)\*\*/g, "**$1**");
+    typeTimer = setInterval(() => {
+      if (i < clean.length) {
+        explEl.textContent += clean[i++];
+      } else {
+        clearInterval(typeTimer);
+        // Switch from raw typewriter text to rich document rendering
+        renderExplanationDoc(text);
+      }
+    }, 14);
+  }
+
+  async function loadExplanation(lang) {
+    if (explCache[lang]) {
+      typewriteThenRender(explCache[lang]);
+      return;
+    }
+    explEl.textContent = "";
+    cursorEl.style.display = "inline-block";
+    explEl.textContent = lang === "hi" ? "लोड हो रहा है…" : "Loading…";
+    try {
+      const res  = await fetch(`/api/explanation/${problemSlug}/?lang=${lang}`);
+      const data = await res.json();
+      explCache[lang] = data.text || "";
+      typewriteThenRender(explCache[lang]);
+    } catch (e) {
+      explEl.textContent = "Could not load explanation.";
+      cursorEl.style.display = "none";
+    }
+  }
+
+  function switchLang(lang) {
+    currentLang = lang;
+    btnEn.style.background = lang === "en" ? "var(--accent)" : "var(--surface2)";
+    btnEn.style.color      = lang === "en" ? "#000" : "var(--txt3)";
+    btnEn.style.border     = lang === "en" ? "none" : "1px solid var(--border)";
+    btnHi.style.background = lang === "hi" ? "var(--accent)" : "var(--surface2)";
+    btnHi.style.color      = lang === "hi" ? "#000" : "var(--txt3)";
+    btnHi.style.border     = lang === "hi" ? "none" : "1px solid var(--border)";
+    loadExplanation(lang);
   }
 
   // ── Init ───────────────────────────────────────────────────
-  // ── Explanation typewriter ─────────────────────────────────
-const explEl     = document.getElementById('code-explanation-text');
-const cursorEl   = document.getElementById('explanation-cursor');
-const btnEn      = document.getElementById('lang-en');
-const btnHi      = document.getElementById('lang-hi');
-let   explCache  = { en: '', hi: '' };
-let   typeTimer  = null;
-let   currentLang = 'en';
+  // Open explanation by default
+  exExpanded = true;
+  exBodyWrap.classList.add("expanded");
+  exToggleIcon.classList.add("open");
+  loadExplanation("en");
 
-function typewrite(text, el, onDone) {
-    clearInterval(typeTimer);
-    el.textContent = '';
-    let i = 0;
-    // Bold markers rendered simply as text — strip ** for cleaner output
-    const clean = text.replace(/\*\*(.*?)\*\*/g, '[$1]');
-    typeTimer = setInterval(() => {
-        if (i < clean.length) {
-            el.textContent += clean[i++];
-        } else {
-            clearInterval(typeTimer);
-            cursorEl.style.display = 'none';
-            if (onDone) onDone();
-        }
-    }, 18); // ms per character — adjust for speed
-}
-
-async function loadExplanation(lang) {
-    if (explCache[lang]) {
-        cursorEl.style.display = 'inline-block';
-        typewrite(explCache[lang], explEl);
-        return;
-    }
-    explEl.textContent = '';
-    cursorEl.style.display = 'inline-block';
-    explEl.textContent = lang === 'hi' ? 'लोड हो रहा है…' : 'Loading…';
-    try {
-        const res  = await fetch(`/api/explanation/${problemSlug}/?lang=${lang}`);
-        const data = await res.json();
-        explCache[lang] = data.text || '';
-        typewrite(explCache[lang], explEl);
-    } catch (e) {
-        explEl.textContent = 'Could not load explanation.';
-        cursorEl.style.display = 'none';
-    }
-}
-
-function switchLang(lang) {
-    currentLang = lang;
-    // Update button styles
-    btnEn.style.background = lang === 'en' ? 'var(--accent)' : 'var(--surface2)';
-    btnEn.style.color      = lang === 'en' ? '#000' : 'var(--txt3)';
-    btnEn.style.border     = lang === 'en' ? 'none' : '1px solid var(--border)';
-    btnHi.style.background = lang === 'hi' ? 'var(--accent)' : 'var(--surface2)';
-    btnHi.style.color      = lang === 'hi' ? '#000' : 'var(--txt3)';
-    btnHi.style.border     = lang === 'hi' ? 'none' : '1px solid var(--border)';
-    loadExplanation(lang);
-}
-
-// Load English on page ready
-loadExplanation('en');
   resetAll();
 </script>
 {% endblock %}
