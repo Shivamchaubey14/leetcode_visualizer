@@ -385,6 +385,48 @@
     .ln-num { font-size: 10px; min-width: 28px; }
   }
 
+  /* ── Word-wrap toggle (Alt+Z) ────────────────────────────── */
+  /* Default: no wrap — horizontal scroll */
+  .code-line {
+    display: flex;
+    align-items: flex-start;
+  }
+  .code-line .ln-body {
+    white-space: pre;
+    overflow: visible;
+  }
+  /* Wrapped state: lines soft-wrap like VS Code */
+  .code-area.word-wrap .code-line {
+    align-items: flex-start;
+  }
+  .code-area.word-wrap .code-line .ln-body {
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow: visible;
+  }
+  .code-area.word-wrap {
+    overflow-x: hidden; /* suppress horizontal scroll when wrapping */
+  }
+  /* Wrap-mode indicator badge */
+  #wrap-badge {
+    display: none;
+    font-size: 9px;
+    font-family: "DM Mono", monospace;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,229,160,0.25);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .code-area.word-wrap ~ .panel-header #wrap-badge,
+  #wrap-badge.visible {
+    display: inline-block;
+  }
+
   /* ═══════════════════════════════════════════════════════════
      NEW: Pre-run placeholder
    ═══════════════════════════════════════════════════════════ */
@@ -688,6 +730,7 @@
       <div class="panel-header">
         <i class="ti ti-code" aria-hidden="true"></i>
         solution.py
+        <span id="wrap-badge" title="Word wrap ON (Alt+Z to toggle)">wrap</span>
         <div class="topbar-file-tag">
           <i class="ti ti-hash"></i>
           <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
@@ -863,8 +906,8 @@
   <div class="speed-group">
     <i class="ti ti-gauge" style="font-size:14px" aria-hidden="true"></i>
     <span>Speed</span>
-    <input type="range" id="speed-control" min="1" max="5" value="3" style="touch-action:none" />
-    <span id="speed-value" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">3×</span>
+    <input type="range" id="speed-control" min="1" max="5" value="1" style="touch-action:none" />
+    <span id="speed-value" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">1×</span>
   </div>
 
   <div class="progress-track" id="progress-track" style="display:none">
@@ -1387,7 +1430,31 @@
     if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRun(); }
     if (e.key === "ArrowRight" || e.key === "n") doStep();
     if (e.key === "r" || e.key === "Escape") resetAll();
+    // Alt+Z — toggle word wrap (VS Code style)
+    if (e.altKey && (e.key === "z" || e.key === "Z")) {
+      e.preventDefault();
+      toggleWordWrap();
+    }
   });
+
+  // ── Word wrap toggle (Alt+Z) ───────────────────────────────
+  let wordWrapOn = false;
+  function toggleWordWrap() {
+    wordWrapOn = !wordWrapOn;
+    const codeArea  = document.getElementById("code-editor");
+    const wrapBadge = document.getElementById("wrap-badge");
+    codeArea.classList.toggle("word-wrap", wordWrapOn);
+    wrapBadge.classList.toggle("visible", wordWrapOn);
+    // Tooltip feedback via exec-status for 1.5 s
+    const prev = execStatus.textContent;
+    const prevColor = execStatus.style.color;
+    execStatus.textContent = wordWrapOn ? "wrap: ON" : "wrap: OFF";
+    execStatus.style.color = "var(--accent)";
+    setTimeout(() => {
+      execStatus.textContent = prev;
+      execStatus.style.color = prevColor;
+    }, 1500);
+  }
 
   // ── Sidebar toggle ─────────────────────────────────────────
   function toggleSidebar() {
