@@ -1,0 +1,140 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 – AlgoScope</title>
+<link rel="icon" type="image/png" href="{% static 'visualizer/images/favicon.png' %}">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0D0F14;
+    --cyan: #00E5A0;
+    --white: #FFFFFF;
+    --white-70: rgba(255,255,255,0.7);
+    --border: rgba(255,255,255,0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-deep);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    color: var(--white);
+  }
+
+  /* full-screen image */
+  .hero-img {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+  }
+
+  /* subtle dark vignette so text pops */
+  .vignette {
+    position: fixed; inset: 0; z-index: 1;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.7) 100%);
+  }
+
+  /* logo */
+  .logo {
+    position: fixed; top: 28px; left: 32px; z-index: 10;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.02em;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    border: 1.5px solid var(--cyan); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cyan); font-size: 12px; font-weight: 800;
+  }
+
+  /* bottom text block */
+  .bottom-block {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center;
+    padding-bottom: clamp(28px, 5vh, 52px);
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+
+  .error-headline {
+    font-size: clamp(18px, 2.2vw, 28px);
+    font-weight: 700; text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  }
+  .error-headline .cyan { color: var(--cyan); }
+
+  .error-sub {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(11px, 1.2vw, 14px);
+    color: var(--white-70);
+    margin-bottom: 24px;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.9);
+  }
+
+  .btn-row { display: flex; gap: 12px; }
+  .btn {
+    padding: 11px 28px; border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border: none; outline: none;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: transparent;
+    color: var(--cyan);
+    border: 1.5px solid var(--cyan);
+    box-shadow: 0 0 16px rgba(0,229,160,0.2), inset 0 0 16px rgba(0,229,160,0.05);
+  }
+  .btn-primary:hover {
+    background: rgba(0,229,160,0.1);
+    box-shadow: 0 0 28px rgba(0,229,160,0.4), inset 0 0 20px rgba(0,229,160,0.1);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.06);
+    color: var(--white-70);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- THE IMAGE -->
+  <img class="hero-img" src="{% static 'visualizer/images/404-caveman.png' %}" alt="404 caveman">
+  <div class="vignette"></div>
+
+  <!-- LOGO -->
+  <div class="logo">
+    <span>AlgoScope</span>
+  </div>
+
+  <!-- BOTTOM TEXT + BUTTONS -->
+  <div class="bottom-block">
+    <h1 class="error-headline">
+      Page not found – even the <span class="cyan">caveman</span> couldn't find it.
+    </h1>
+    <p class="error-sub">"He touched the wrong wire. Go back or check the URL."</p>
+    <div class="btn-row">
+      <a href="/" class="btn btn-primary">← Back to Algorithms</a>
+      <button class="btn btn-ghost" onclick="history.back()">Go Back</button>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -192,3 +192,12 @@ def run_code(request, slug):
 def get_steps(request, slug):
     problem = get_object_or_404(Problem, slug=slug)
     return JsonResponse({'steps': []})
+
+def error_500_preview(request):
+    return render(request, '500.html', status=500)
+
+def error_404_preview(request):
+    return render(request, '404.html', status=404)
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
