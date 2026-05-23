@@ -81,11 +81,16 @@ class ProblemAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Pretty-print existing data back into the textarea
+        # ── FIX: always serialize the stored Python object back to a
+        #    proper JSON string so the textarea shows double-quoted JSON,
+        #    not Python's repr (single quotes, True/False/None).
         if self.instance and self.instance.pk:
             raw = self.instance.test_cases
-            if raw:
-                self.fields['test_cases'].initial = json.dumps(raw, indent=2)
+            if raw is not None:
+                # json.dumps produces real JSON: double quotes, true/false/null
+                self.initial['test_cases'] = json.dumps(raw, indent=2, ensure_ascii=False)
+            else:
+                self.initial['test_cases'] = '[]'
 
     # ── Validation ──────────────────────────────────────────
     def clean_test_cases(self):

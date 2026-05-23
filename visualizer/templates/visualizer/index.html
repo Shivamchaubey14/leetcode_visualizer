@@ -1,15 +1,137 @@
 {% extends 'visualizer/base.html' %}
 
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ALGOSCOPE – INDEX PAGE
+   ═══════════════════════════════════════════════════════════ */
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.app-shell {
+    height: 100vh;
+    overflow: hidden;
+    grid-template-rows: 56px 1fr 46px;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+}
+.sidebar-section-label { flex-shrink: 0; }
+.problem-list {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+}
+.problem-list::-webkit-scrollbar { display: none; }
+.sidebar-stats { flex-shrink: 0; }
+
+/* ── Main content ─────────────────────────────────────────── */
+.main-content {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.index-content {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+}
+.index-content::-webkit-scrollbar { display: none; }
+
+/* ── Sticky hero ──────────────────────────────────────────── */
+/* KEY FIX:
+   - No top padding — hero sits flush against the topbar with zero gap
+   - Negative margin trick not needed; just no top padding/margin
+   - background must be opaque so scrolling content hides under it
+*/
+.page-hero {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);           /* solid — no see-through */
+    padding: 20px 28px 18px;         /* no top gap, side/bottom only */
+    margin: 0;                        /* flush against topbar */
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 6px 20px -2px rgba(0,0,0,0.55);  /* hides scroll content sliding under */
+    flex-shrink: 0;
+}
+
+.page-hero h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--txt);
+    letter-spacing: -0.02em;
+}
+
+.page-hero p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--txt3);
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+/* ── Problems grid ────────────────────────────────────────── */
+.problems-grid {
+    padding: 14px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ── Card entrance ────────────────────────────────────────── */
+.problem-card {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.34s ease, transform 0.34s ease,
+                background 0.18s ease, border-color 0.18s ease;
+}
+.problem-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Sidebar item entrance ────────────────────────────────── */
+.problem-item {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.28s ease, transform 0.28s ease,
+                background 0.15s ease;
+}
+.problem-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<!-- Topbar -->
 <header class="topbar">
     <div class="topbar-brand">
         <div class="brand-icon">
             <i class="ti ti-chart-dots" aria-hidden="true"></i>
         </div>
         <div>
-            <div class="brand-name">AlgoScope</div>
+            <a href="{% url 'index' %}" style="text-decoration:none;color:inherit;"><div class="brand-name">AlgoScope</div></a>
             <div class="brand-tag">Step-by-step visualizer</div>
         </div>
     </div>
@@ -25,10 +147,9 @@
     </div>
 </header>
 
-<!-- Sidebar -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="sidebar-section-label">Browse Problems</div>
-    <div class="problem-list">
+    <div class="problem-list" id="sidebar-problem-list">
         {% for problem in problems %}
         <a href="{% url 'detail' problem.slug %}" class="problem-item">
             <span class="pi-num">{{ problem.leetcode_id }}</span>
@@ -55,43 +176,92 @@
     </div>
 </aside>
 
-<!-- Main index content -->
-<main class="main-content index-content">
-    <div class="page-hero">
-        <h1>Choose a Problem to Visualize</h1>
-        <p>Select any problem to see a line-by-line walkthrough of the solution with variable tracking and array state.</p>
-    </div>
+<main class="main-content">
+    <div class="index-content" id="index-main" style="
+    padding-top: 0px;
+    padding-bottom: 28px;
+">
 
-    <div class="problems-grid">
-        {% for problem in problems %}
-        <a href="{% url 'detail' problem.slug %}"
-           class="problem-card {% if problem.difficulty == 'easy' %}easy-card{% elif problem.difficulty == 'medium' %}med-card{% else %}hard-card{% endif %}">
-            <span class="pc-num">{{ problem.leetcode_id }}</span>
-            <div class="pc-info">
-                <div class="pc-title">{{ problem.title }}</div>
-                <div class="pc-cat">{{ problem.get_category_display }}</div>
-            </div>
-            <span class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
-                {{ problem.get_difficulty_display }}
-            </span>
-            <i class="ti ti-chevron-right" style="font-size:16px;color:var(--txt3);" aria-hidden="true"></i>
-        </a>
-        {% empty %}
-        <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;background:var(--surface);border-radius:var(--radius-md);border:1px dashed var(--border);">
-            <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>
-            No problems added yet. Add problems through the admin panel.
+        <div class="page-hero">
+            <h1>Choose a Problem to Visualize</h1>
+            <p>Select any problem to see a line-by-line walkthrough of the solution with variable tracking and array state.</p>
         </div>
-        {% endfor %}
+
+        <div class="problems-grid" id="problems-grid">
+            {% for problem in problems %}
+            <a href="{% url 'detail' problem.slug %}"
+               class="problem-card {% if problem.difficulty == 'easy' %}easy-card{% elif problem.difficulty == 'medium' %}med-card{% else %}hard-card{% endif %}">
+                <span class="pc-num">{{ problem.leetcode_id }}</span>
+                <div class="pc-info">
+                    <div class="pc-title">{{ problem.title }}</div>
+                    <div class="pc-cat">{{ problem.get_category_display }}</div>
+                </div>
+                <span class="diff-badge {% if problem.difficulty == 'easy' %}badge-easy{% elif problem.difficulty == 'medium' %}badge-med{% else %}badge-hard{% endif %}">
+                    {{ problem.get_difficulty_display }}
+                </span>
+                <i class="ti ti-chevron-right" style="font-size:16px;color:var(--txt3);" aria-hidden="true"></i>
+            </a>
+            {% empty %}
+            <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;background:var(--surface);border-radius:var(--radius-md);border:1px dashed var(--border);">
+                <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>
+                No problems added yet. Add problems through the admin panel.
+            </div>
+            {% endfor %}
+        </div>
+
     </div>
 </main>
 
-<!-- Sidebar footer -->
 <div class="sidebar-footer">
     <i class="ti ti-info-circle" style="font-size:13px;" aria-hidden="true"></i>
     AlgoScope v1.0
 </div>
 
-<!-- Controls footer (empty for index) -->
-<div style="grid-column:2;grid-row:3;background:var(--surface);border-top:1px solid var(--border);height:44px;"></div>
+<div style="grid-column:2;grid-row:3;background:var(--surface);border-top:1px solid var(--border);height:46px;"></div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    document.querySelectorAll('#sidebar-problem-list .problem-item')
+        .forEach((el, i) => {
+            setTimeout(() => el.classList.add('visible'), 50 + i * 50);
+        });
+
+    const scrollRoot = document.getElementById('index-main');
+    const cards = document.querySelectorAll('#problems-grid .problem-card');
+    if (!cards.length) return;
+
+    function isInView(el) {
+        const rr = scrollRoot.getBoundingClientRect();
+        const er = el.getBoundingClientRect();
+        return er.top < rr.bottom && er.bottom > rr.top;
+    }
+
+    requestAnimationFrame(() => {
+        const belowFold = [];
+        cards.forEach((card, i) => {
+            if (isInView(card)) {
+                setTimeout(() => card.classList.add('visible'), 80 + i * 65);
+            } else {
+                belowFold.push(card);
+            }
+        });
+
+        if (!belowFold.length) return;
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('visible');
+                io.unobserve(entry.target);
+            });
+        }, { root: scrollRoot, rootMargin: '0px 0px -10px 0px', threshold: 0.05 });
+
+        belowFold.forEach(card => io.observe(card));
+    });
+});
+</script>
 {% endblock %}

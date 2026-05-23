@@ -3,6 +3,7 @@ from django.urls import reverse
 
 class Problem(models.Model):
     CATEGORIES = [
+        ('number', 'Number'),
         ('array', 'Array'),
         ('string', 'String'),
         ('tree', 'Tree'),
