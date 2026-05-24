@@ -185,12 +185,38 @@ html, body {
         <div class="page-hero">
             <h1>Choose a Problem to Visualize</h1>
             <p>Select any problem to see a line-by-line walkthrough of the solution with variable tracking and array state.</p>
+            <div style="margin-top: 14px; position: relative;">
+                <i class="ti ti-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--txt3); font-size:14px; pointer-events:none;"></i>
+                <input
+                    id="problem-search"
+                    type="text"
+                    placeholder="Search by name or number…"
+                    autocomplete="off"
+                    style="
+                        width: 100%;
+                        max-width: 420px;
+                        padding: 9px 14px 9px 36px;
+                        font-family: 'Outfit', sans-serif;
+                        font-size: 13px;
+                        background: var(--surface);
+                        border: 1px solid var(--border2);
+                        border-radius: var(--radius-sm);
+                        color: var(--txt);
+                        outline: none;
+                        transition: border-color 0.2s, box-shadow 0.2s;
+                    "
+                    onfocus="this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 0 3px var(--accent-dim)'"
+                    onblur="this.style.borderColor='var(--border2)'; this.style.boxShadow='none'"
+                >
+                <span id="search-count" style="margin-left:12px; font-size:11px; color:var(--txt3);"></span>
+            </div>
         </div>
 
         <div class="problems-grid" id="problems-grid">
             {% for problem in problems %}
             <a href="{% url 'detail' problem.slug %}"
-               class="problem-card {% if problem.difficulty == 'easy' %}easy-card{% elif problem.difficulty == 'medium' %}med-card{% else %}hard-card{% endif %}">
+            class="problem-card {% if problem.difficulty == 'easy' %}easy-card{% elif problem.difficulty == 'medium' %}med-card{% else %}hard-card{% endif %}"
+            data-search="{{ problem.leetcode_id }} {{ problem.title|lower }} {{ problem.get_category_display|lower }} {{ problem.get_difficulty_display|lower }}">
                 <span class="pc-num">{{ problem.leetcode_id }}</span>
                 <div class="pc-info">
                     <div class="pc-title">{{ problem.title }}</div>
@@ -204,11 +230,10 @@ html, body {
             {% empty %}
             <div style="padding:24px;text-align:center;color:var(--txt3);font-size:13px;background:var(--surface);border-radius:var(--radius-md);border:1px dashed var(--border);">
                 <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px;" aria-hidden="true"></i>
-                No problems added yet. Add problems through the admin panel.
+                No problems added yet.
             </div>
             {% endfor %}
         </div>
-
     </div>
 </main>
 
@@ -263,5 +288,49 @@ document.addEventListener('DOMContentLoaded', () => {
         belowFold.forEach(card => io.observe(card));
     });
 });
+</script>
+<script>
+// ── SEARCH ──────────────────────────────────────────────────
+(function () {
+    const input  = document.getElementById('problem-search');
+    const cards  = document.querySelectorAll('#problems-grid .problem-card');
+    const count  = document.getElementById('search-count');
+    const noRes  = document.getElementById('no-results');
+    const total  = cards.length;
+
+    if (!input) return;
+
+    input.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        let visible = 0;
+
+        cards.forEach(card => {
+            const hay = card.dataset.search || '';
+            const show = !q || hay.includes(q);
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        // update count label
+        if (q) {
+            count.textContent = visible === 0
+                ? 'No results'
+                : `${visible} of ${total}`;
+            count.style.color = visible === 0 ? 'var(--hard)' : 'var(--txt3)';
+        } else {
+            count.textContent = '';
+        }
+    });
+
+    // also filter sidebar list
+    const sideItems = document.querySelectorAll('#sidebar-problem-list .problem-item');
+    input.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        sideItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = (!q || text.includes(q)) ? '' : 'none';
+        });
+    });
+})();
 </script>
 {% endblock %}
