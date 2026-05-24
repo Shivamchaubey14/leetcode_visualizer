@@ -1039,7 +1039,7 @@
   // ═══════════════════════════════════════════════════════════
   const FLOW_NODE_R    = 7;
   const FLOW_COL_W     = 36;   // horizontal spacing between nodes
-  const FLOW_ROW_H     = 54;   // vertical spacing between rows
+  const FLOW_ROW_H     = 64;   // vertical spacing between rows (increased for rounder wrap)
   const FLOW_NODES_PER_ROW = 10; // how many nodes per row before wrapping
   const FLOW_PAD_X     = 16;
   const FLOW_PAD_Y     = 18;
@@ -1091,10 +1091,11 @@
         // straight horizontal connector
         d = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
       } else {
-        // wrap: curve down from end-of-row to start of next row
-        // a = last node in row, b = first node in next row
-        const midY = (a.y + b.y) / 2;
-        d = `M ${a.x} ${a.y} C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
+        // wrap: smooth S-curve with rounded corners
+        // Pull control points further apart vertically so the curve arcs gently
+        const cp1y = a.y + (b.y - a.y) * 0.35;
+        const cp2y = a.y + (b.y - a.y) * 0.65;
+        d = `M ${a.x} ${a.y} C ${a.x} ${cp1y}, ${b.x} ${cp2y}, ${b.x} ${b.y}`;
       }
 
       path.setAttribute("d", d);
