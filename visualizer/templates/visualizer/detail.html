@@ -390,13 +390,59 @@
 
   #graph-tooltip {
     position: fixed; display: none;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 5px 9px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0;
     font-size: 11px; font-family: "DM Mono", monospace;
-    color: var(--txt2); z-index: 500; max-width: 220px;
+    color: var(--txt2); z-index: 500; max-width: 260px; min-width: 180px;
     pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+    overflow: hidden;
   }
+  .tt-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border);
+  }
+  .tt-step-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 1px 6px; border-radius: 99px;
+    background: var(--accent-dim); color: var(--accent);
+    border: 1px solid rgba(0,229,160,0.25); flex-shrink: 0;
+  }
+  .tt-line {
+    font-size: 10px; color: var(--txt4); margin-left: auto;
+  }
+  .tt-body { padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; transition: all 0.15s ease; }
+  .tt-expl {
+    font-size: 11px; color: var(--txt2); line-height: 1.5;
+    font-family: inherit; white-space: normal; word-break: break-word;
+  }
+  .tt-vars {
+    display: flex; flex-direction: column; gap: 3px; margin-top: 2px;
+  }
+  .tt-var-row {
+    display: flex; align-items: baseline; gap: 5px;
+    font-size: 10px;
+  }
+  .tt-var-name {
+    color: var(--accent); font-weight: 700; flex-shrink: 0;
+    max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tt-var-val {
+    color: var(--txt2); word-break: break-all;
+    max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tt-var-changed {
+    color: #f5a623; font-size: 9px; flex-shrink: 0;
+  }
+  .tt-fn {
+    font-size: 10px; color: var(--txt3); margin-top: 2px;
+    border-top: 1px solid var(--border); padding-top: 4px;
+  }
+  .tt-empty { font-size: 10px; color: var(--txt4); font-style: italic; }
 
   @media (max-width: 1200px) and (min-width: 769px) {
     .code-line .ln-body { font-size: 12px; }
@@ -1185,12 +1231,7 @@
         g.appendChild(lbl);
       }
 
-      // Tooltip title
-      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-      const step  = executionSteps[i];
-      const expl  = step.explanation ? step.explanation.replace(/<[^>]+>/g, "").slice(0, 80) : `Line ${step.line}`;
-      title.textContent = `Step ${i + 1}: ${expl}`;
-      g.appendChild(title);
+      // Tooltip handled by mouseover below
 
       // Click-to-seek
       g.addEventListener("click", () => {
@@ -1200,13 +1241,124 @@
         if (i === executionSteps.length - 1) finishExecution();
       });
 
+      // Rich tooltip on hover
+      g.addEventListener("mouseenter", (e) => showFlowTooltip(i, e));
+      g.addEventListener("mousemove",  (e) => moveFlowTooltip(e));
+      g.addEventListener("mouseleave", ()  => hideFlowTooltip());
+
       flowSvg.appendChild(g);
     }
   }
+  // ── Flow graph rich tooltip ────────────────────────────────
+  const ttEl = document.getElementById("graph-tooltip");
+  let _ttActiveIdx = -1;
+
+  function buildTooltipHTML(idx) {
+    const step = executionSteps[idx];
+    if (!step) return "";
+
+    // Step explanation (strip HTML tags)
+    const expl = step.explanation
+      ? step.explanation.replace(/<[^>]+>/g, "").slice(0, 120)
+      : `Line ${step.line}: executing…`;
+
+    // Variables at this step — compare with previous step's locals
+    const currLocals = step.locals || {};
+    const prevLocals = idx > 0 ? (executionSteps[idx - 1].locals || {}) : {};
+
+    const INJECTED = new Set(["ListNode","TreeNode","GraphNode","Optional","List",
+      "Dict","Tuple","Set","Any","Union","Solution","solution"]);
+
+    const entries = Object.entries(currLocals).filter(([k]) => !INJECTED.has(k));
+
+    let varsHTML = "";
+    if (entries.length) {
+      varsHTML = `<div class="tt-vars">` +
+        entries.slice(0, 6).map(([k, v]) => {
+          const display = sanitizeValue(v);
+          const changed = prevLocals[k] !== undefined && prevLocals[k] !== v;
+          const truncated = display.length > 22 ? display.slice(0, 22) + "…" : display;
+          return `<div class="tt-var-row">
+            <span class="tt-var-name">${esc(k)}</span>
+            <span style="color:var(--txt4);font-size:9px">=</span>
+            <span class="tt-var-val${changed ? "" : ""}" style="${changed ? "color:#f5a623" : ""}">${esc(truncated)}</span>
+            ${changed ? `<span class="tt-var-changed">↑ changed</span>` : ""}
+          </div>`;
+        }).join("") +
+        (entries.length > 6 ? `<div class="tt-empty">+${entries.length - 6} more…</div>` : "") +
+        `</div>`;
+    } else {
+      varsHTML = `<div class="tt-empty">no variables in scope</div>`;
+    }
+
+    // Function name
+    const fnName = sanitizeValue(step.function_name || "main");
+
+    // Node color label
+    const meta = stepMeta[idx] || {};
+    const isVisit = visitedSteps.has(idx);
+    const isCurr  = idx === currentStepIndex;
+    let statusColor = "#888";
+    let statusLabel = "pending";
+    if (isCurr)  { statusColor = "#00b8ff"; statusLabel = "► current"; }
+    else if (isVisit && meta.hasArr) { statusColor = "#f5a623"; statusLabel = "arr change"; }
+    else if (isVisit && meta.hasVar) { statusColor = "#e056d9"; statusLabel = "var change"; }
+    else if (isVisit) { statusColor = "#00e5a0"; statusLabel = "visited"; }
+
+    const pulseDot = isCurr
+      ? `<span style="width:6px;height:6px;border-radius:50%;background:#00b8ff;
+                      display:inline-block;flex-shrink:0;
+                      box-shadow:0 0 0 2px rgba(0,184,255,0.3);
+                      animation:cursorBlink 0.8s step-end infinite;"></span>`
+      : "";
+    return `
+      <div class="tt-header">
+        ${pulseDot}
+        <span class="tt-step-badge">step ${idx + 1}</span>
+        <span style="font-size:9px;padding:1px 7px;border-radius:99px;
+                     background:${statusColor}22;color:${statusColor};
+                     border:1px solid ${statusColor}44;">${statusLabel}</span>
+        <span class="tt-line">line ${step.line}</span>
+      </div>
+      <div class="tt-body">
+        <div class="tt-expl">${esc(expl)}</div>
+        ${varsHTML}
+        <div class="tt-fn"><i class="ti ti-function" style="font-size:9px;margin-right:3px;"></i>${esc(fnName)}()</div>
+      </div>`;
+  }
+
+  function showFlowTooltip(idx, e) {
+    _ttActiveIdx = idx;
+    ttEl.innerHTML = buildTooltipHTML(idx);
+    ttEl.style.display = "block";
+    moveFlowTooltip(e);
+  }
+
+  function moveFlowTooltip(e) {
+    const pad = 14;
+    const w   = ttEl.offsetWidth  || 260;
+    const h   = ttEl.offsetHeight || 120;
+    let x = e.clientX + pad;
+    let y = e.clientY + pad;
+    if (x + w > window.innerWidth  - 8) x = e.clientX - w - pad;
+    if (y + h > window.innerHeight - 8) y = e.clientY - h - pad;
+    ttEl.style.left = x + "px";
+    ttEl.style.top  = y + "px";
+  }
+
+  function hideFlowTooltip() {
+    ttEl.style.display = "none";
+    _ttActiveIdx = -1;
+  }
 
   function refreshFlowGraph() {
+    const activeTooltipIdx = ttEl.style.display !== "none" ? _ttActiveIdx : -1;
     buildFlowGraph();
     graphCounter.textContent = `${currentStepIndex + 1} / ${executionSteps.length}`;
+    // Re-render tooltip content live if it was open
+    if (activeTooltipIdx >= 0) {
+      ttEl.innerHTML = buildTooltipHTML(activeTooltipIdx);
+    }
   }
 
   // ── Array viz ──────────────────────────────────────────────
@@ -1300,6 +1452,10 @@
       </div>`;
 
     refreshFlowGraph();
+    // If tooltip is pinned open on current node, refresh its content
+    if (_ttActiveIdx === idx) {
+      ttEl.innerHTML = buildTooltipHTML(idx);
+    }
   }
 
   // ── CSRF ───────────────────────────────────────────────────
