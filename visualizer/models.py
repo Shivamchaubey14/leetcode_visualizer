@@ -32,6 +32,7 @@ class Problem(models.Model):
         help_text="Step-by-step explanation of the solution (auto-generated or manual)"
     )
     code_explanation_hi = models.TextField(blank=True, default='', help_text="Hindi explanation (auto-generated)")
+    code_pattern = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
