@@ -713,6 +713,34 @@
     line-height: 1.7;
     margin: 0 0 6px;
   }
+  /* ── Pattern Analyzer ────────────────────────────────────── */
+.pattern-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-family: "DM Mono", monospace;
+  font-weight: 700; letter-spacing: 0.10em;
+  padding: 2px 9px; border-radius: 99px;
+  background: rgba(245,166,35,0.12);
+  color: #f5a623;
+  border: 1px solid rgba(245,166,35,0.3);
+  white-space: nowrap;
+}
+.pattern-secondary-badge {
+  background: rgba(224,86,217,0.10);
+  color: #e056d9;
+  border-color: rgba(224,86,217,0.25);
+}
+.pattern-similar-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--txt2);
+  padding: 3px 0;
+}
+.pattern-similar-item i { color: #f5a623; font-size: 11px; flex-shrink: 0; }
+.pattern-when {
+  font-size: 11px; color: var(--txt3); line-height: 1.6;
+  border-left: 2px solid rgba(245,166,35,0.4);
+  padding-left: 8px; margin-top: 6px;
+  font-style: italic;
+}
 </style>
 {% endblock %} {% block content %}
 
@@ -857,6 +885,23 @@
             </div>
           </div>
         </div>
+        <!-- ═══════════════════════════════════════════════════════════
+            PATTERN ANALYZER
+        ════════════════════════════════════════════════════ -->
+      <div class="viz-section" id="pattern-card">
+        <div class="viz-section-head" onclick="togglePattern()" style="cursor:pointer;">
+          <i class="ti ti-puzzle" style="color:#f5a623;font-size:13px;flex-shrink:0;"></i>
+          <span class="section-label">pattern analyzer</span>
+          <div id="pattern-badges" style="display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;"></div>
+          <i class="ti ti-chevron-down expl-toggle-icon" id="pattern-toggle-icon"></i>
+        </div>
+        <div class="expl-body-wrap" id="pattern-body-wrap">
+          <div class="viz-section-body" style="padding:14px 16px;min-height:60px;">
+            <div id="pattern-text"></div>
+            <span id="pattern-cursor" style="display:inline-block;width:2px;height:14px;background:#f5a623;margin-left:2px;vertical-align:middle;animation:cursorBlink 0.8s step-end infinite;"></span>
+          </div>
+        </div>
+      </div>
 
         <!-- ═══════════════════════════════════════════════════
              STEP EXPLANATION — always visible after run
@@ -1882,6 +1927,117 @@
     btnHi.style.border     = lang === "hi" ? "none" : "1px solid var(--border)";
     loadExplanation(lang);
   }
+  // ═══════════════════════════════════════════════════════════
+//  PATTERN ANALYZER
+// ═══════════════════════════════════════════════════════════
+const patternEl      = document.getElementById("pattern-text");
+const patternCursor  = document.getElementById("pattern-cursor");
+const patternBadges  = document.getElementById("pattern-badges");
+const patternBodyWrap = document.getElementById("pattern-body-wrap");
+const patternToggleIcon = document.getElementById("pattern-toggle-icon");
+let patternExpanded  = true;
+let patternCache     = "";
+
+function togglePattern() {
+  patternExpanded = !patternExpanded;
+  patternBodyWrap.classList.toggle("expanded", patternExpanded);
+  patternToggleIcon.classList.toggle("open", patternExpanded);
+}
+
+function renderPatternDoc(raw) {
+  patternEl.innerHTML = "";
+  patternCursor.style.display = "none";
+  patternBadges.innerHTML = "";
+
+  const lines = raw.split("\n");
+  let html = "";
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    const m = line.match(/^\*\*([^*]+)\*\*[:\s]*(.*)/);
+    if (!m) { html += `<p class="expl-prose">${esc(line)}</p>`; continue; }
+
+    const label = m[1].trim();
+    const value = m[2].trim();
+    const lLow  = label.toLowerCase();
+
+    if (lLow.includes("primary")) {
+      // Badge in header + inline
+      if (value) {
+        patternBadges.innerHTML = `<span class="pattern-badge"><i class="ti ti-puzzle" style="font-size:9px"></i>${esc(value)}</span>`;
+      }
+      html += `<div class="expl-heading expl-heading-insight">
+        <span class="expl-heading-pill" style="background:rgba(245,166,35,0.12);color:#f5a623;border-color:rgba(245,166,35,0.25);">
+          <i class="ti ti-puzzle" style="font-size:9px;margin-right:3px;"></i>Primary Pattern
+        </span>
+        <span class="expl-heading-line"></span>
+      </div>
+      <p class="expl-prose" style="color:#f5a623;font-weight:700;font-size:13px;">${esc(value)}</p>`;
+
+    } else if (lLow.includes("why")) {
+      html += `<p class="expl-prose">${esc(value)}</p>`;
+
+    } else if (lLow.includes("secondary")) {
+      const parts = value.split(",").map(s => s.trim()).filter(s => s && s.toLowerCase() !== "none");
+      if (parts.length) {
+        html += `<div class="expl-heading expl-heading-steps">
+          <span class="expl-heading-pill" style="background:rgba(224,86,217,0.12);color:#e056d9;border-color:rgba(224,86,217,0.25);">
+            <i class="ti ti-layers-intersect" style="font-size:9px;margin-right:3px;"></i>Also Uses
+          </span>
+          <span class="expl-heading-line"></span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">` +
+          parts.map(p => `<span class="pattern-badge pattern-secondary-badge">${esc(p)}</span>`).join("") +
+        `</div>`;
+      }
+
+    } else if (lLow.includes("similar")) {
+      const problems = value.split(",").map(s => s.trim()).filter(Boolean);
+      if (problems.length) {
+        html += `<div class="expl-heading expl-heading-approach">
+          <span class="expl-heading-pill">
+            <i class="ti ti-copy" style="font-size:9px;margin-right:3px;"></i>Similar Problems
+          </span>
+          <span class="expl-heading-line"></span>
+        </div>` +
+          problems.map(p =>
+            `<div class="pattern-similar-item"><i class="ti ti-arrow-right"></i>${esc(p)}</div>`
+          ).join("");
+      }
+
+    } else if (lLow.includes("when")) {
+      html += `<div class="expl-heading expl-heading-complexity">
+        <span class="expl-heading-pill" style="background:rgba(245,166,35,0.08);color:#f5a623aa;border-color:rgba(245,166,35,0.2);">
+          <i class="ti ti-clock" style="font-size:9px;margin-right:3px;"></i>When to Use
+        </span>
+        <span class="expl-heading-line"></span>
+      </div>
+      <div class="pattern-when">${esc(value)}</div>`;
+
+    } else {
+      html += `<p class="expl-prose"><strong style="color:var(--txt2)">${esc(label)}:</strong> ${esc(value)}</p>`;
+    }
+  }
+
+  patternEl.innerHTML = html;
+}
+
+async function loadPattern() {
+  if (patternCache) { renderPatternDoc(patternCache); return; }
+  patternEl.textContent = "Analyzing pattern…";
+  patternCursor.style.display = "inline-block";
+  try {
+    const res  = await fetch(`/api/pattern/${problemSlug}/`);
+    const data = await res.json();
+    patternCache = data.text || "";
+    renderPatternDoc(patternCache);
+  } catch (e) {
+    patternEl.textContent = "Could not load pattern analysis.";
+    patternCursor.style.display = "none";
+  }
+}
 
   // ── Init ───────────────────────────────────────────────────
   // Open explanation by default
@@ -1889,6 +2045,10 @@
   exBodyWrap.classList.add("expanded");
   exToggleIcon.classList.add("open");
   loadExplanation("en");
+  loadPattern();
+// Open pattern card by default
+patternBodyWrap.classList.add("expanded");
+patternToggleIcon.classList.add("open");
 
   resetAll();
 </script>

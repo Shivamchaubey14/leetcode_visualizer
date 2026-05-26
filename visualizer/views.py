@@ -60,6 +60,24 @@ Format exactly as (use Hindi text, keep code/complexity symbols in English):
 
 Max 200 words. Simple Hindi, beginner-friendly."""
 
+def _pattern_prompt(problem) -> str:
+    return f"""Analyze this LeetCode solution and identify the algorithmic patterns used.
+
+Problem: {problem.leetcode_id}. {problem.title} ({problem.get_difficulty_display()})
+Category: {problem.get_category_display()}
+
+```python
+{problem.solution_code}
+```
+
+Respond in this exact format:
+**Primary Pattern:** name of main pattern (e.g. Two Pointers, Sliding Window, Binary Search, Dynamic Programming, BFS, DFS, Backtracking, Hash Map, Greedy, Divide & Conquer, Monotonic Stack, Union Find, Trie, Heap)
+**Why:** one sentence explaining why this pattern fits.
+**Secondary Patterns:** comma-separated list or "None"
+**Similar Problems:** 2-3 LeetCode problem titles that use the same pattern.
+**When to use this pattern:** one sentence rule of thumb.
+
+Max 120 words. Be precise."""
 
 def generate_explanation(problem: Problem):
     """Generate and cache both EN and HI explanations."""
@@ -79,6 +97,12 @@ def generate_explanation(problem: Problem):
         problem.code_explanation_hi = _call_groq(_hindi_prompt(problem))
         fields_to_save.append('code_explanation_hi')
         print(f"  [explanation] Hindi done ({len(problem.code_explanation_hi)} chars)")
+        
+    if not problem.code_pattern:
+        print(f"  [explanation] Calling Groq for Pattern...")
+        problem.code_pattern = _call_groq(_pattern_prompt(problem))
+        fields_to_save.append('code_pattern')
+        print(f"  [explanation] Pattern done ({len(problem.code_pattern)} chars)")
 
     if fields_to_save:
         problem.save(update_fields=fields_to_save)
@@ -99,7 +123,7 @@ def detail(request, slug):
     print(f"\n{'='*60}")
     print(f"  [detail] slug={slug}  has_en={bool(problem.code_explanation)}  has_hi={bool(problem.code_explanation_hi)}")
 
-    if not problem.code_explanation or not problem.code_explanation_hi:
+    if not problem.code_explanation or not problem.code_explanation_hi or not problem.code_pattern:
         try:
             generate_explanation(problem)
         except Exception as e:
@@ -130,6 +154,11 @@ def get_explanation(request, slug):
     text = problem.code_explanation_hi if lang == 'hi' else problem.code_explanation
     return JsonResponse({'text': text, 'lang': lang})
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_pattern(request, slug):
+    problem = get_object_or_404(Problem, slug=slug)
+    return JsonResponse({'text': problem.code_pattern or '', 'slug': slug})
 
 @csrf_exempt
 @require_http_methods(["POST"])
