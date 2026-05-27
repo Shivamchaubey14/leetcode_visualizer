@@ -2418,7 +2418,6 @@ function appendChatMsg(role, text, stepLabel) {
 
   const bubble = document.createElement("div");
   bubble.className = "chat-bubble";
-  bubble.textContent = text;
 
   const meta = document.createElement("div");
   meta.className = "chat-meta";
@@ -2429,6 +2428,31 @@ function appendChatMsg(role, text, stepLabel) {
   wrap.appendChild(bubble);
   wrap.appendChild(meta);
   chatMsgsEl.appendChild(wrap);
+
+  if (role === "assistant") {
+    // Typewriter effect for AI responses
+    let i = 0;
+    const speed = 18; // ms per character — tweak this (lower = faster)
+    bubble.textContent = "";
+    const cursor = document.createElement("span");
+    cursor.style.cssText = "display:inline-block;width:2px;height:12px;background:var(--accent);margin-left:2px;vertical-align:middle;animation:cursorBlink 0.8s step-end infinite;";
+    bubble.appendChild(cursor);
+
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        bubble.textContent = text.slice(0, ++i);
+        bubble.appendChild(cursor);
+        chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
+      } else {
+        clearInterval(timer);
+        cursor.remove();
+        bubble.textContent = text;
+      }
+    }, speed);
+  } else {
+    bubble.textContent = text;
+  }
+
   chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
   return wrap;
 }
