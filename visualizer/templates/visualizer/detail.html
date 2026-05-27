@@ -1964,7 +1964,7 @@
   });
 
   document.addEventListener("keydown", e => {
-    if (e.target.tagName === "INPUT") return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
     if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRun(); }
     if (e.key === "ArrowRight" || e.key === "n") doStep();
     if (e.key === "r" || e.key === "Escape") resetAll();
@@ -2205,7 +2205,7 @@
         // Switch from raw typewriter text to rich document rendering
         renderExplanationDoc(text);
       }
-    }, 14);
+    }, 2);
   }
 
   async function loadExplanation(lang) {
