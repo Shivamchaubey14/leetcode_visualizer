@@ -10,4 +10,5 @@ urlpatterns = [
     path('500/', views.error_500_preview, name='error_500_preview'),
     path('404/', views.error_404_preview, name='error_404_preview'),
     path('api/pattern/<slug:slug>/', views.get_pattern, name='get_pattern'),
+    path('api/chat/<slug:slug>/', views.chat_step, name='chat_step'),
     ]

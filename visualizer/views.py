@@ -216,6 +216,74 @@ def run_code(request, slug):
         traceback.print_exc()
         print(f"{'!'*60}\n")
         return JsonResponse({'success': False, 'error': str(e)})
+    
+@csrf_exempt
+@require_http_methods(["POST"])
+def chat_step(request, slug):
+    """
+    Accepts: { message, step_index, step_context: { line, explanation, locals, function_name } }
+    Returns: { reply }
+    """
+    try:
+        data         = json.loads(request.body)
+        user_message = data.get('message', '').strip()
+        step_ctx     = data.get('step_context', {})
+        history      = data.get('history', [])   # list of {role, content}
+        problem      = get_object_or_404(Problem, slug=slug)
+
+        if not user_message:
+            return JsonResponse({'success': False, 'error': 'Empty message'})
+
+        # ── Build system prompt ────────────────────────────────
+        locals_str = json.dumps(step_ctx.get('locals', {}), indent=2) if step_ctx.get('locals') else 'none'
+        system = f"""You are AlgoScope's step-by-step tutor embedded inside a code visualizer.
+
+PROBLEM CONTEXT:
+  Title      : {problem.leetcode_id}. {problem.title} ({problem.get_difficulty_display()})
+  Category   : {problem.get_category_display()}
+  Difficulty : {problem.get_difficulty_display()}
+
+CURRENT EXECUTION STEP:
+  Line           : {step_ctx.get('line', '?')}
+  Function       : {step_ctx.get('function_name', 'main')}
+  Step Explanation: {step_ctx.get('explanation', 'N/A')}
+  Variables in scope:
+{locals_str}
+
+FULL SOLUTION CODE:
+```python
+{problem.solution_code}
+```
+
+RULES:
+- Answer ONLY about this problem and code.
+- When referring to variables, mention their current values from the scope above.
+- Keep answers concise (max 120 words) but thorough.
+- If asked about a different step, explain based on the code context.
+- Use plain text only — no markdown headers, no bullet symbols, just clean sentences.
+- If the user asks "why", explain the algorithm logic, not just what the line does."""
+
+        # ── Build messages list (keep last 6 turns for context) ──
+        trimmed_history = history[-12:]   # 6 user + 6 assistant
+        messages = [{"role": m["role"], "content": m["content"]} for m in trimmed_history]
+        messages.append({"role": "user", "content": user_message})
+
+        # ── Call Groq ─────────────────────────────────────────
+        client = Groq(api_key=settings.GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "system", "content": system}] + messages,
+            max_tokens=300,
+            temperature=0.4,
+        )
+        reply = response.choices[0].message.content.strip()
+
+        return JsonResponse({'success': True, 'reply': reply})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
 def get_steps(request, slug):

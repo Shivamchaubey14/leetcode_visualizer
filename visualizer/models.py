@@ -3,11 +3,12 @@ from django.urls import reverse
 
 class Problem(models.Model):
     CATEGORIES = [
+        ('hashtable', 'Hash Table'),   
         ('number', 'Number'),
         ('array', 'Array'),
         ('string', 'String'),
         ('tree', 'Tree'),
-        ('dp', 'Dynamic Programming'),
+        ('dp', 'Dynamic Programming'), 
         ('graph', 'Graph'),
         ('linkedlist', 'Linked List'),
     ]

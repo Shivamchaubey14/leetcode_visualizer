@@ -741,6 +741,246 @@
   padding-left: 8px; margin-top: 6px;
   font-style: italic;
 }
+/* ═══════════════════════════════════════════════════════════
+   STEP CHAT PANEL
+═══════════════════════════════════════════════════════════ */
+#chat-fab {
+  position: fixed;
+  bottom: 72px; right: 18px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 20px rgba(0,229,160,0.35);
+  z-index: 400;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,229,160,0.5); }
+#chat-fab .chat-fab-badge {
+  position: absolute; top: -3px; right: -3px;
+  min-width: 16px; height: 16px;
+  border-radius: 99px;
+  background: #f5a623;
+  font-size: 9px; font-weight: 700;
+  font-family: "DM Mono", monospace;
+  color: #000;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 0 3px;
+  border: 2px solid var(--bg);
+}
+#chat-fab .chat-fab-badge.visible { display: flex; }
+
+#chat-panel {
+  position: fixed;
+  bottom: 72px; right: 18px;
+  width: 340px;
+  max-height: 520px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex; flex-direction: column;
+  z-index: 500;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+  transform: scale(0.92) translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
+              opacity   0.22s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+#chat-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+@media (max-width: 480px) {
+  #chat-panel {
+    bottom: 0; right: 0; left: 0;
+    width: 100%; border-radius: 14px 14px 0 0;
+    max-height: 70vh;
+  }
+  #chat-fab { bottom: 80px; }
+}
+
+.chat-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  flex-shrink: 0;
+}
+.chat-header-title {
+  font-size: 12px; font-weight: 700;
+  color: var(--txt1);
+  font-family: "DM Mono", monospace;
+  flex: 1;
+}
+.chat-step-chip {
+  font-size: 9px;
+  font-family: "DM Mono", monospace;
+  padding: 2px 8px; border-radius: 99px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(0,229,160,0.25);
+  flex-shrink: 0;
+}
+.chat-close-btn {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: none; cursor: pointer;
+  color: var(--txt3); font-size: 16px; border-radius: 6px;
+  flex-shrink: 0;
+}
+.chat-close-btn:hover { background: var(--surface2); color: var(--txt1); }
+
+.chat-context-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0,229,160,0.04);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; color: var(--txt4);
+  font-family: "DM Mono", monospace;
+  flex-shrink: 0;
+  min-height: 28px;
+}
+.chat-context-bar i { color: var(--accent); font-size: 11px; }
+#chat-ctx-line { color: var(--accent); font-weight: 700; }
+
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 12px 10px;
+  display: flex; flex-direction: column; gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface3) transparent;
+}
+
+.chat-msg {
+  display: flex; flex-direction: column; gap: 3px;
+  max-width: 88%;
+}
+.chat-msg.user { align-self: flex-end; align-items: flex-end; }
+.chat-msg.assistant { align-self: flex-start; align-items: flex-start; }
+
+.chat-bubble {
+  padding: 8px 11px;
+  border-radius: 10px;
+  font-size: 12px; line-height: 1.6;
+  word-break: break-word;
+}
+.chat-msg.user    .chat-bubble {
+  background: var(--accent);
+  color: #000;
+  border-bottom-right-radius: 3px;
+}
+.chat-msg.assistant .chat-bubble {
+  background: var(--surface2);
+  color: var(--txt2);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 3px;
+}
+
+.chat-meta {
+  font-size: 9px; color: var(--txt4);
+  font-family: "DM Mono", monospace;
+  padding: 0 4px;
+}
+
+.chat-typing {
+  display: flex; align-items: center; gap: 4px;
+  padding: 8px 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 10px 3px;
+  width: fit-content;
+  align-self: flex-start;
+}
+.chat-typing span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  animation: typingBounce 1.2s infinite ease-in-out;
+  display: inline-block;
+}
+.chat-typing span:nth-child(2) { animation-delay: 0.18s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
+  30%            { transform: translateY(-5px); opacity: 1;   }
+}
+
+.chat-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; padding: 24px 16px;
+  text-align: center; color: var(--txt4);
+  flex: 1;
+}
+.chat-empty i { font-size: 24px; opacity: 0.4; }
+.chat-empty p { font-size: 11px; line-height: 1.5; margin: 0; }
+
+.chat-suggestions {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding: 0 10px 8px;
+  flex-shrink: 0;
+}
+.chat-suggestion-btn {
+  font-size: 10px;
+  font-family: "DM Mono", monospace;
+  padding: 4px 10px; border-radius: 99px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--txt3); cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.chat-suggestion-btn:hover {
+  background: var(--accent-dim);
+  border-color: rgba(0,229,160,0.4);
+  color: var(--accent);
+}
+
+.chat-input-row {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+#chat-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--txt1);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 7px 11px;
+  outline: none;
+  resize: none;
+  min-height: 34px; max-height: 90px;
+  line-height: 1.5;
+  scrollbar-width: thin;
+}
+#chat-input:focus { border-color: rgba(0,229,160,0.5); }
+#chat-input::placeholder { color: var(--txt4); }
+
+#chat-send-btn {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #000; font-size: 16px;
+  transition: background 0.15s, transform 0.1s;
+}
+#chat-send-btn:hover  { background: #00ffb0; }
+#chat-send-btn:active { transform: scale(0.93); }
+#chat-send-btn:disabled { background: var(--surface3); color: var(--txt4); cursor: not-allowed; }
 </style>
 {% endblock %} {% block content %}
 
@@ -749,6 +989,55 @@
 
 <!-- ── Graph tooltip ──────────────────────────────────── -->
 <div id="graph-tooltip"></div>
+
+<!-- ── Step Chat FAB ──────────────────────────────────── -->
+<button id="chat-fab" onclick="toggleChat()" title="Ask about current step" aria-label="Open step chat">
+  <i class="ti ti-message-circle-2"></i>
+  <span class="chat-fab-badge" id="chat-fab-badge"></span>
+</button>
+
+<!-- ── Step Chat Panel ────────────────────────────────── -->
+<div id="chat-panel" role="dialog" aria-label="Step chat">
+
+  <div class="chat-header">
+    <i class="ti ti-robot" style="color:var(--accent);font-size:14px;flex-shrink:0;"></i>
+    <span class="chat-header-title">Ask about this step</span>
+    <span class="chat-step-chip" id="chat-step-chip">no step</span>
+    <button class="chat-close-btn" onclick="toggleChat()" aria-label="Close chat">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <div class="chat-context-bar" id="chat-context-bar">
+    <i class="ti ti-code"></i>
+    <span>Line <span id="chat-ctx-line">—</span></span>
+    <span style="color:var(--border)">|</span>
+    <span id="chat-ctx-fn" style="color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">no context</span>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-empty" id="chat-empty">
+      <i class="ti ti-message-question"></i>
+      <p>Run the visualizer, then ask anything about the current step — variable values, why the code does this, what happens next…</p>
+    </div>
+  </div>
+
+  <div class="chat-suggestions" id="chat-suggestions">
+    <button class="chat-suggestion-btn" onclick="sendSuggestion(this)">Why this line?</button>
+    <button class="chat-suggestion-btn" onclick="sendSuggestion(this)">What are these variables?</button>
+    <button class="chat-suggestion-btn" onclick="sendSuggestion(this)">What happens next?</button>
+    <button class="chat-suggestion-btn" onclick="sendSuggestion(this)">Explain in simple terms</button>
+  </div>
+
+  <div class="chat-input-row">
+    <textarea id="chat-input" placeholder="Ask about step {{ currentStepIndex|default:'…' }}…" rows="1"
+      onkeydown="chatKeydown(event)" oninput="autoResizeChatInput(this)"></textarea>
+    <button id="chat-send-btn" onclick="sendChat()" title="Send" aria-label="Send message">
+      <i class="ti ti-send"></i>
+    </button>
+  </div>
+
+</div>
 
 <!-- ── Topbar ─────────────────────────────────────────── -->
 <header class="topbar">
@@ -1035,13 +1324,32 @@
   // ═══════════════════════════════════════════════════════════
 
   // ── State ─────────────────────────────────────────────────
-  let executionSteps  = [];
+  let executionSteps   = [];
   let currentStepIndex = -1;
   let isRunning        = false;
   let autoTimer        = null;
   let prevLocals       = {};
   let visitedSteps     = new Set();
   let stepMeta         = [];
+
+  // ── Chat state (must be declared before resetAll is called) ─
+  let chatOpen     = false;
+  let chatHistory  = [];
+  let chatMsgCount = 0;
+  let chatBusy     = false;
+
+  // ── Chat DOM refs (must be before resetAll too) ────────────
+  const chatPanel    = document.getElementById("chat-panel");
+  const chatFab      = document.getElementById("chat-fab");
+  const chatFabBadge = document.getElementById("chat-fab-badge");
+  const chatMsgsEl   = document.getElementById("chat-messages");
+  const chatEmptyEl  = document.getElementById("chat-empty");
+  const chatInputEl  = document.getElementById("chat-input");
+  const chatSendBtn  = document.getElementById("chat-send-btn");
+  const chatStepChip = document.getElementById("chat-step-chip");
+  const chatCtxLine  = document.getElementById("chat-ctx-line");
+  const chatCtxFn    = document.getElementById("chat-ctx-fn");
+  const chatSuggsEl  = document.getElementById("chat-suggestions");
 
   // ── DOM refs ───────────────────────────────────────────────
   const codeLines      = document.querySelectorAll(".code-line");
@@ -1491,6 +1799,8 @@
     if (_ttActiveIdx === idx) {
       ttEl.innerHTML = buildTooltipHTML(idx);
     }
+    // notify chat context bar
+  if (typeof updateChatContext === "function" && chatOpen) updateChatContext();
   }
 
   // ── CSRF ───────────────────────────────────────────────────
@@ -1566,6 +1876,16 @@
 
     runBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run';
     setStatus("idle", "var(--txt4)");
+    // reset chat history but keep panel state
+    chatHistory  = [];
+    chatMsgCount = 0;
+    chatBusy     = false;
+    chatMsgsEl.innerHTML = "";
+    chatMsgsEl.appendChild(chatEmptyEl);
+    chatEmptyEl.style.display = "";
+    chatSuggsEl.style.display = "";
+    chatFabBadge.classList.remove("visible");
+    updateChatContext();
   }
 
   async function doStep() {
@@ -2041,5 +2361,172 @@ patternBodyWrap.classList.add("expanded");
 patternToggleIcon.classList.add("open");
 
   resetAll();
+
+
+
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  chatPanel.classList.toggle("open", chatOpen);
+  // Swap FAB icon
+  chatFab.querySelector("i").className = chatOpen
+    ? "ti ti-x"
+    : "ti ti-message-circle-2";
+  if (chatOpen) {
+    updateChatContext();
+    chatInputEl.focus();
+    chatFabBadge.classList.remove("visible");
+  }
+}
+
+function updateChatContext() {
+  if (currentStepIndex < 0 || !executionSteps.length) {
+    chatStepChip.textContent = "no step";
+    chatCtxLine.textContent  = "—";
+    chatCtxFn.textContent    = "run visualizer first";
+    return;
+  }
+  const step = executionSteps[currentStepIndex];
+  chatStepChip.textContent = `step ${currentStepIndex + 1} / ${executionSteps.length}`;
+  chatCtxLine.textContent  = step.line;
+  chatCtxFn.textContent    = sanitizeValue(step.function_name || "main");
+}
+// Re-bind buttons that called the old reference directly
+// (they use the module-level var, so reassign it):
+// Note: because renderStep is called by name in the existing code,
+// we need to shadow it. Paste the override after the existing renderStep def.
+
+function buildStepContext() {
+  if (currentStepIndex < 0 || !executionSteps.length) return {};
+  const step = executionSteps[currentStepIndex];
+  return {
+    line:          step.line,
+    explanation:   (step.explanation || "").replace(/<[^>]+>/g, ""),
+    locals:        step.locals || {},
+    function_name: sanitizeValue(step.function_name || "main"),
+    step_index:    currentStepIndex,
+    total_steps:   executionSteps.length,
+  };
+}
+
+function appendChatMsg(role, text, stepLabel) {
+  chatEmptyEl.style.display = "none";
+  chatSuggsEl.style.display = chatHistory.length > 1 ? "none" : "";
+
+  const wrap = document.createElement("div");
+  wrap.className = `chat-msg ${role}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "chat-bubble";
+  bubble.textContent = text;
+
+  const meta = document.createElement("div");
+  meta.className = "chat-meta";
+  meta.textContent = role === "user"
+    ? (stepLabel ? `step ${stepLabel}` : "you")
+    : "AlgoScope AI";
+
+  wrap.appendChild(bubble);
+  wrap.appendChild(meta);
+  chatMsgsEl.appendChild(wrap);
+  chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
+  return wrap;
+}
+
+function showTypingIndicator() {
+  const el = document.createElement("div");
+  el.className = "chat-typing";
+  el.id = "chat-typing-indicator";
+  el.innerHTML = "<span></span><span></span><span></span>";
+  chatMsgsEl.appendChild(el);
+  chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById("chat-typing-indicator");
+  if (el) el.remove();
+}
+
+async function sendChat() {
+  const msg = chatInputEl.value.trim();
+  if (!msg || chatBusy) return;
+
+  chatBusy = true;
+  chatSendBtn.disabled = true;
+  chatInputEl.value = "";
+  autoResizeChatInput(chatInputEl);
+
+  const stepCtx   = buildStepContext();
+  const stepLabel = currentStepIndex >= 0 ? currentStepIndex + 1 : null;
+
+  // Append user message
+  appendChatMsg("user", msg, stepLabel);
+  chatHistory.push({ role: "user", content: msg });
+
+  // Show typing indicator
+  showTypingIndicator();
+
+  try {
+    const res  = await fetch(`/api/chat/${problemSlug}/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf() },
+      body: JSON.stringify({
+        message:      msg,
+        step_context: stepCtx,
+        history:      chatHistory.slice(0, -1),   // history before this message
+      }),
+    });
+    const data = await res.json();
+    removeTypingIndicator();
+
+    if (data.success) {
+      appendChatMsg("assistant", data.reply);
+      chatHistory.push({ role: "assistant", content: data.reply });
+
+      // Bump unread badge if panel is closed
+      if (!chatOpen) {
+        chatMsgCount++;
+        chatFabBadge.textContent = chatMsgCount;
+        chatFabBadge.classList.add("visible");
+      }
+    } else {
+      appendChatMsg("assistant", `Error: ${data.error || "Something went wrong."}`);
+    }
+  } catch (err) {
+    removeTypingIndicator();
+    appendChatMsg("assistant", `Network error: ${err.message}`);
+  }
+
+  chatBusy = false;
+  chatSendBtn.disabled = false;
+  chatInputEl.focus();
+}
+
+function sendSuggestion(btn) {
+  chatInputEl.value = btn.textContent;
+  sendChat();
+}
+
+function chatKeydown(e) {
+  // Send on Enter (not Shift+Enter)
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+}
+
+function autoResizeChatInput(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 90) + "px";
+}
+
+// Keyboard shortcut: Alt+C to open/close chat
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.altKey && (e.key === "c" || e.key === "C")) {
+    e.preventDefault();
+    toggleChat();
+  }
+});
 </script>
 {% endblock %}
