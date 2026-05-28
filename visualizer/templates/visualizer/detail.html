@@ -1274,6 +1274,19 @@
             </div>
           </div>
 
+        <!-- Output Result -->
+          <div class="viz-section" id="output-section" style="display:none;">
+            <div class="viz-section-head">
+              <i class="ti ti-terminal" style="color:var(--accent);font-size:13px;flex-shrink:0;"></i>
+              <span class="section-label">output</span>
+              <span class="section-count" id="output-status-badge">—</span>
+            </div>
+            <div class="viz-section-body" style="padding:12px 16px;">
+              <div id="output-display" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent);word-break:break-all;line-height:1.7;"></div>
+              <div id="error-display" style="display:none;font-family:'DM Mono',monospace;font-size:12px;color:var(--hard);word-break:break-all;line-height:1.7;margin-top:6px;border-left:2px solid var(--hard);padding-left:8px;"></div>
+            </div>
+          </div>
+
         </div><!-- /runtime-sections -->
 
       </div><!-- /viz-scroll -->
@@ -1315,6 +1328,7 @@
   </div>
 
   <span class="output-tag" id="output-tag" style="display:none">✓ Done</span>
+<div id="output-result-box" style="display:none;margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title=""></div>
 </div>
 
 {% endblock %} {% block extra_js %}
@@ -1831,6 +1845,8 @@
         currentStepIndex = 0;
         renderStep(0);
         setStatus("ready", "var(--easy)");
+        // Show output result
+        showOutputResult(data.output, data.error);
         return true;
       } else {
         stepMsg.innerHTML = `<span style="color:var(--hard);display:flex;align-items:center;gap:6px;">
@@ -1867,6 +1883,11 @@
 
     outputTag.style.display  = "none";
     progressTrack.style.display = "none";
+    // Hide output section
+    const outSection = document.getElementById("output-section");
+    if (outSection) outSection.style.display = "none";
+    const outResultBox = document.getElementById("output-result-box");
+    if (outResultBox) { outResultBox.style.display = "none"; outResultBox.textContent = ""; }
     progressFill.style.width = "0%";
     codeLines.forEach(l => l.classList.remove("active"));
 
@@ -2542,6 +2563,58 @@ function chatKeydown(e) {
 function autoResizeChatInput(el) {
   el.style.height = "auto";
   el.style.height = Math.min(el.scrollHeight, 90) + "px";
+}
+// ── Output result display ──────────────────────────────────
+function showOutputResult(output, error) {
+  const section   = document.getElementById("output-section");
+  const outEl     = document.getElementById("output-display");
+  const errEl     = document.getElementById("error-display");
+  const badge     = document.getElementById("output-status-badge");
+  const resultBox = document.getElementById("output-result-box");
+
+  if (!section) return;
+  section.style.display = "";
+
+  if (error && error.trim()) {
+    // Show error state
+    badge.textContent = "error";
+    badge.style.color = "var(--hard)";
+    outEl.textContent = output ? `Output: ${output}` : "No output";
+    outEl.style.color = "var(--txt3)";
+    errEl.style.display = "";
+    errEl.textContent = `Error: ${error}`;
+    // Controls bar box
+    if (resultBox) {
+      resultBox.style.display = "";
+      resultBox.style.color = "var(--hard)";
+      resultBox.style.borderColor = "var(--hard)";
+      resultBox.textContent = `✗ Error`;
+      resultBox.title = error;
+    }
+  } else if (output && output.trim()) {
+    // Show output
+    badge.textContent = "result";
+    badge.style.color = "var(--easy)";
+    outEl.style.color = "var(--accent)";
+    outEl.textContent = output;
+    errEl.style.display = "none";
+    // Controls bar compact box
+    if (resultBox) {
+      resultBox.style.display = "";
+      resultBox.style.color = "var(--accent)";
+      resultBox.style.borderColor = "rgba(0,229,160,0.3)";
+      const truncated = output.length > 40 ? output.slice(0, 40) + "…" : output;
+      resultBox.textContent = `→ ${truncated}`;
+      resultBox.title = output;
+    }
+  } else {
+    // No output, no error
+    badge.textContent = "no output";
+    outEl.style.color = "var(--txt4)";
+    outEl.textContent = "No return value captured.";
+    errEl.style.display = "none";
+    if (resultBox) resultBox.style.display = "none";
+  }
 }
 
 // Keyboard shortcut: Alt+C to open/close chat
