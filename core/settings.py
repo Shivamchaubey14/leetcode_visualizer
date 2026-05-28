@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+
+load_dotenv()  # reads .env file
 """
 Django settings for core project.
 
@@ -21,12 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t#k_@*v_sj9x3+7$#3ln4_r8-x#+i0&ekre)i=x0zsvd+1c!qu'
-
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-t#k_@*v_sj9x3+7$#3ln4_r8-x#+i0&ekre)i=x0zsvd+1c!qu')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+import os
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS += os.getenv('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -78,11 +82,14 @@ ASGI_APPLICATION = 'core.asgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE':   os.getenv('DB_ENGINE',   'django.db.backends.sqlite3'),
+        'NAME':     os.getenv('DB_NAME',     BASE_DIR / 'db.sqlite3'),
+        'USER':     os.getenv('DB_USER',     ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST':     os.getenv('DB_HOST',     'localhost'),
+        'PORT':     os.getenv('DB_PORT',     '3306'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -128,9 +135,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-from dotenv import load_dotenv
-
-load_dotenv()  # reads .env file
 
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 

@@ -1,0 +1,550 @@
+[
+  {
+    "id": 1,
+    "leetcode_id": 1,
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "category": "array",
+    "difficulty": "easy",
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.\r\n\r\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\r\n\r\nYou can return the answer in any order.\r\n\r\nExample 1:\r\nInput: nums = [2,7,11,15], target = 9\r\nOutput: [0,1]\r\n\r\nExample 2:\r\nInput: nums = [3,2,4], target = 6\r\nOutput: [1,2]\r\n\r\nExample 3:\r\nInput: nums = [3,3], target = 6\r\nOutput: [0,1]\r\n\r\nConstraints:\r\n- 2 <= nums.length <= 10^4\r\n- -10^9 <= nums[i] <= 10^9\r\n- -10^9 <= target <= 10^9\r\n- Only one valid answer exists",
+    "solution_code": "class Solution:\r\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\r\n        hash_map = {}\r\n        for i in range(len(nums)):\r\n            if target - nums[i] in hash_map:\r\n                return [hash_map[target-nums[i]], i]\r\n            hash_map[nums[i]] = i",
+    "test_cases": [
+      {
+        "args": [
+          [
+            2,
+            7,
+            11,
+            15
+          ],
+          9
+        ]
+      },
+      {
+        "args": [
+          [
+            3,
+            2,
+            4
+          ],
+          6
+        ]
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses a hash table to keep track of the numbers encountered and their indices, allowing for efficient lookup of pairs that sum up to the target.\n\n**Steps:**\n1. Initialize an empty hash table `hash_map` to store the numbers encountered and their indices.\n2. Iterate over the `nums` array with index `i`.\n3. For each number at index `i`, calculate its complement with respect to the target `target - nums[i]`.\n4. Check if the complement is already present in `hash_map`. If it is, return the index of the complement and the current index `i` as the pair that sums up to the target.\n5. If the complement is not found, add the current number `nums[i]` and its index `i` to `hash_map`.\n6. Repeat steps 2-5 until the end of the `nums` array is reached. If no pair is found, return an empty list.\n\n**Key insight:** By using a hash table to store the numbers and their indices, we can efficiently look up pairs that sum up to the target, resulting in a time complexity of O(n) where n is the length of the `nums` array.\n\n**Complexity:** Time: O(n) | Space: O(n)",
+    "code_explanation_hi": "**तरीका:** दो संख्याओं को जोड़ने वाली स्थिति का समाधान करना।\n**चरण:**\n\n1. एक निर्धारित लेंथ के एक मानचित्र (array) `nums` और एक लक्ष्य संख्या `target` मिलती है।\n2. एक खाली निर्धारित लेंथ के एक मानचित्र (hash_map) बनाया जाता है।\n3. `nums` के प्रत्येक संख्या पर एक लूप में:\n * कंप्लिमेंट = लक्ष्य - संख्या\n * यदि कंप्लिमेंट मानचित्र में मौजूद है, तो [मानचित्र से कंप्लिमेंट का मान, वर्तमान संख्या] वापस करना।\n * मानचित्र से संख्या को वर्तमान संख्या से मिलाकर डालें।\n4. यदि कोई संख्या पारी के अंत में भी नहीं मिली, तो एक खाली सूची वापस करना।\n\n**मुख्य बात:** यह काम इसलिए करती है क्योंकि हम एक हैश मैप का उपयोग करके प्रत्येक संख्या के साथ उसके कंप्लिमेंट को जोड़ते हैं। इसके परिणामस्वरूप हम जब भी दो संख्याओं से लक्ष्य में पहुंच सकते हैं, तो सीधे हम उन संख्याओं को ढूंढ लेते हैं।\n\n**जटिलता:** Time: O(n",
+    "code_pattern": "**Primary Pattern:** Hash Map\n**Why:** The solution uses a hash map to store and retrieve elements efficiently based on their values.\n**Secondary Patterns:** None\n**Similar Problems:** \"Valid Anagram\", \"Intersection of Two Arrays\", \"Contains Duplicate II\"\n**When to use this pattern:** Use a hash map pattern when you need to frequently look up or check elements in an array.",
+    "created_at": "2026-05-19 10:22:41.548434+00:00"
+  },
+  {
+    "id": 2,
+    "leetcode_id": 2,
+    "title": "Add Two Number",
+    "slug": "add-two-number",
+    "category": "linkedlist",
+    "difficulty": "medium",
+    "description": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\r\n\r\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.\r\n\r\n \r\n\r\nExample 1:\r\n\r\n\r\nInput: l1 = [2,4,3], l2 = [5,6,4]\r\nOutput: [7,0,8]\r\nExplanation: 342 + 465 = 807.\r\nExample 2:\r\n\r\nInput: l1 = [0], l2 = [0]\r\nOutput: [0]\r\nExample 3:\r\n\r\nInput: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\r\nOutput: [8,9,9,9,0,0,0,1]\r\n \r\n\r\nConstraints:\r\n\r\nThe number of nodes in each linked list is in the range [1, 100].\r\n0 <= Node.val <= 9\r\nIt is guaranteed that the list represents a number that does not have leading zeros.",
+    "solution_code": "# Definition for singly-linked list.\r\n# class ListNode:\r\n#     def __init__(self, val=0, next=None):\r\n#         self.val = val\r\n#         self.next = next\r\nclass Solution:\r\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\r\n        carry = 0\r\n\r\n        dummy = ListNode(0)\r\n\r\n        current = dummy\r\n\r\n        while l1 or l2 or carry:\r\n\r\n            val1 = l1.val if l1 else 0\r\n            val2 = l2.val if l2 else 0\r\n\r\n            total = val1 + val2 + carry\r\n\r\n            carry = total // 10\r\n            digit = total % 10\r\n\r\n            current.next = ListNode(digit)\r\n\r\n            current = current.next\r\n\r\n            if l1:\r\n                l1 = l1.next\r\n\r\n            if l2: \r\n                l2 = l2.next\r\n\r\n        return dummy.next",
+    "test_cases": [
+      {
+        "args": [
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            5,
+            6,
+            4
+          ]
+        ],
+        "linked_list_args": [
+          0,
+          1
+        ]
+      },
+      {
+        "args": [
+          [
+            0
+          ],
+          [
+            0
+          ]
+        ],
+        "linked_list_args": [
+          0,
+          1
+        ]
+      },
+      {
+        "args": [
+          [
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+          ],
+          [
+            9,
+            9,
+            9,
+            9
+          ]
+        ],
+        "linked_list_args": [
+          0,
+          1
+        ]
+      }
+    ],
+    "code_explanation": "**Approach:** This solution adds two numbers represented as linked lists by processing them from the least significant digit to the most significant digit.\n\n**Steps:**\n1. Initialize a dummy node `dummy` and a variable `carry` to store the result of the addition of the current digits and the carry from the previous step.\n2. Iterate through the linked lists `l1` and `l2` until both lists are empty or there is no carry left.\n3. For each iteration, get the values of the current digits from `l1` and `l2` (or 0 if the list has ended).\n4. Calculate the sum of the values and the carry, and update the carry for the next iteration.\n5. Create a new node with the least significant digit of the sum and add it to the `dummy` list.\n6. Move to the next nodes in `l1` and `l2`, or reset them to 0 if they have ended.\n7. After the iteration ends, return the next node of `dummy` which is the head of the resulting linked list.\n\n**Key insight:** The dummy node is used to simplify the code and avoid special cases for the head of the resulting list.\n\n**Complexity:** Time: O(max(n,m)) | Space: O(max(n,m)) where n and m are the lengths of the input linked lists `l1` and `l2`.",
+    "code_explanation_hi": "**तरीका:** दो संख्याओं के पत्ती सूची को जोड़े और एक नये पत्ती सूची में परिणाम वापस करता है।\n\n**चरण:**\n1. एक अतिरिक्त नंबर (carry) को 0 मानकर शुरू करते हैं।\n2. एक dummy हेड नोड बनाते हैं जिससे हमे पत्ती सूची का नया हेड बनाने में मदद मिलती है।\n3. दोनों पत्ती सूची के हेड को current नोड से जोड़ते हैं।\n4. जब तक हमे पत्ती सूची और अतिरिक्त नंबर के साथ काम करना शेष है, हम निम्नलिखित कदमों पर चलते हैं।\n * व्यक्तिगत पत्ती संख्याओं को लेते हैं या उन्हे 0 का मान देते हैं यदि पत्ती सूची का हेड मौजूद नहीं है।\n * दोनों पत्ती संख्या और अतिरिक्त नंबर के साथ जोड़ते हैं और अतिरिक्त नंबर को 10 से भागते हैं और बाइट को बचा जाता है।\n * new नोड बनता है जिसे current नोड के बाद जोड़ते हैं और current नोड अपडेट करते हैं।\n5. पत्ती सूची के हेड को वापस करते हैं और अतिरिक्त नंबर को 0 कर देते हैं।\n\n**मुख्य बात:** हमे पत्ती सूची में element add करन",
+    "code_pattern": "**Primary Pattern:** Linked List Iteration\n**Why:** This pattern fits as it involves iterating through the linked list, accessing node values, and updating the next pointer.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** 2. Add Two Numbers (Easy), 160. Intersection of Two Linked Lists, 876. Middle of the Linked List.\n\n**When to use this pattern:** When dealing with singly or doubly linked lists and needing to traverse them, especially when combining or merging elements.",
+    "created_at": "2026-05-20 09:42:53.872652+00:00"
+  },
+  {
+    "id": 3,
+    "leetcode_id": 3,
+    "title": "Longest Substring Without Repeating Characters",
+    "slug": "longest-substring-without-repeating-characters",
+    "category": "string",
+    "difficulty": "medium",
+    "description": "Given a string s, find the length of the longest substring without duplicate characters.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"abcabcbb\"\r\nOutput: 3\r\nExplanation: The answer is \"abc\", with the length of 3. Note that \"bca\" and \"cab\" are also correct answers.\r\nExample 2:\r\n\r\nInput: s = \"bbbbb\"\r\nOutput: 1\r\nExplanation: The answer is \"b\", with the length of 1.\r\nExample 3:\r\n\r\nInput: s = \"pwwkew\"\r\nOutput: 3\r\nExplanation: The answer is \"wke\", with the length of 3.\r\nNotice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.",
+    "solution_code": "class Solution:\r\n  def lengthOfLongestSubstring(self, s: str) -> int:\r\n        mx, start, chars = 0, 0, {}\r\n\r\n        for i in range(len(s)):\r\n\r\n            if s[i] in chars and start <= chars[s[i]]:\r\n                start = chars[s[i]] + 1\r\n\r\n            else:\r\n                mx = max(mx, i - start + 1)\r\n\r\n            chars[s[i]] = i\r\n\r\n        return mx",
+    "test_cases": [
+      {
+        "args": [
+          "abcabcbb"
+        ]
+      },
+      {
+        "args": [
+          "bbbbb"
+        ]
+      },
+      {
+        "args": [
+          "pwwkew"
+        ]
+      }
+    ],
+    "code_explanation": "**Approach:** The solution uses a sliding window approach with a hash map to efficiently track the longest substring without repeating characters.\n\n**Steps:**\n\n1. Initialize variables: `mx` to store the maximum substring length, `start` to store the start index of the current window, and `chars` as a hash map to store the last seen index of each character in the string.\n2. Iterate through the string `s`. For each character at index `i`:\n   * If the character is already in the hash map `chars` and its last seen index is within or before the current window (`start <= chars[s[i]]`), update the start index `start` to the index after the last seen index of the repeating character.\n   * Otherwise, update `mx` with the maximum length of the current substring (`i - start + 1`).\n   * Store the current character and its index `i` in the hash map `chars`.\n3. Return `mx` as the length of the longest substring without repeating characters.\n\n**Key insight:** The key insight is to use a sliding window approach and a hash map to efficiently track the longest substring without repeating characters, allowing for a time complexity of O(n) where n is the length of the string.\n\n**Complexity:** Time: O(n) | Space: O(min(n, m)) where m is the size of the character set.",
+    "code_explanation_hi": "**तरीका:**\nइस समस्या का समाधान करने के लिए, हमें सबसे लंबी क्षेत्र बनाने होंगे जिसे फिर से आ सकने वाली कोई शब्द नहीं हो।\n\n**चरण:**\n\n1. हम एक वर्चुअल क्षेत्र (विंडो) की शुरुआत करेंगे जिसमें हम शब्दों को सही तरीके से रख सकते हैं, जैसे कि एक प्रकार का मेमोरी (chars) है जो शब्दों को हॉश मेप में डालता है।\n2. हम विंडो की शुरुआती सीमा (start) को 0 के रूप में तय करते हैं और एक वैरिएबल mx जो सबसे लंबी विंडो का आकार है, को 0 के रूप में तय करते हैं।\n3. हम वाक्य m के प्रत्येक शब्द पे चक्कर लगाते हैं, अगर शब्द पहले से ही वर्चुअल मेमोरी में है और वर्चुअल विंडो की शुरुआती सीमा (start) से ले जाने वाला शब्द उस शब्द से जटिल है, तो हम वर्चुअल विंडो की शुरुआती सीमा को उस शब्द की लोकेशन से +1 पर लगा लेते हे।\n4. वर्चुअल विंडो का आकार जो वर्तमान शब्द पे है, अगर वर्चुअल विंडो क",
+    "code_pattern": "**Primary Pattern:** Sliding Window\n**Why:** The code continuously updates the start and end pointers to track the longest substring without repeating characters.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** Longest Substring with At Most K Repeating Characters, Minimum Window Substring, Longest Substring of One Character Type.\n\n**When to use this pattern:** Use the Sliding Window pattern to solve problems involving finding the maximum or minimum value within a certain time interval or window, often with constraints where some elements are repeatable.",
+    "created_at": "2026-05-20 09:58:22.554936+00:00"
+  },
+  {
+    "id": 4,
+    "leetcode_id": 4,
+    "title": "Median of Two Sorted Arrays",
+    "slug": "median-of-two-sorted-arrays",
+    "category": "array",
+    "difficulty": "hard",
+    "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.\r\n\r\nThe overall run time complexity should be O(log (m+n)).\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: nums1 = [1,3], nums2 = [2]\r\nOutput: 2.00000\r\nExplanation: merged array = [1,2,3] and median is 2.\r\nExample 2:\r\n\r\nInput: nums1 = [1,2], nums2 = [3,4]\r\nOutput: 2.50000\r\nExplanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.\r\n \r\n\r\nConstraints:\r\n\r\nnums1.length == m\r\nnums2.length == n\r\n0 <= m <= 1000\r\n0 <= n <= 1000\r\n1 <= m + n <= 2000\r\n-106 <= nums1[i], nums2[i] <= 106",
+    "solution_code": "class Solution:\r\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\r\n        arr = sorted(nums1 + nums2)\r\n        if len(arr) % 2 == 0: return (arr[len(arr) // 2] + arr[len(arr) // 2 - 1]) / 2\r\n        else: return arr[len(arr) // 2]",
+    "test_cases": [
+      {
+        "args": [
+          [
+            1,
+            3
+          ],
+          [
+            2
+          ]
+        ],
+        "expected": 2.0
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": 2.5
+      },
+      {
+        "args": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "expected": 0.0
+      },
+      {
+        "args": [
+          [],
+          [
+            1
+          ]
+        ],
+        "expected": 1.0
+      },
+      {
+        "args": [
+          [
+            2
+          ],
+          []
+        ],
+        "expected": 2.0
+      }
+    ],
+    "code_explanation": "**Approach:** This solution finds the median of two sorted arrays by merging the two arrays and finding the middle element(s).\n\n**Steps:**\n1. First, the two input arrays `nums1` and `nums2` are combined into a single array `arr` using the `+` operator, and then sorted in ascending order using the `sorted()` function.\n2. Next, the length of the merged array `arr` is checked to determine whether the total number of elements is even or odd.\n3. If the total number of elements is even, the median is calculated as the average of the two middle elements at indices `len(arr) // 2` and `len(arr) // 2 - 1`.\n4. If the total number of elements is odd, the median is simply the middle element at index `len(arr) // 2`.\n\n**Key insight:** This solution has a simple and intuitive approach, but it has a time complexity of O(n log n) due to the sorting step, where n is the total number of elements.\n\n**Complexity:** Time: O(n log n) | Space: O(n)",
+    "code_explanation_hi": "**तरीका:**\nहमें दो वर्णित सूची का मध्य मूल्य खोजना है, जो कि अर्द्ध मध्य बिंदु के रूप में काम करता है।\n\n**चरण:**\n1. हम दो सूची को मिलाकर एक नई सूची बनाते हैं।\n2. हम इस नई सूची को सिर्फ एक बार सॉर्ट करत है।\n3. जिसकी लंबाई यह पता करनी है कि सूची में संख्याओं की गिनति जो समान अंक पर हो या नहीं।\n4. अगर लंबाई सम है, तो हम अर्ध मध्य और उससे पहले के दो संख्याओं का अरithmetic माध्य जानकर answer पाते हैं।\n5. अगर लंबाई odd है, तो हम मध्य संख्या ही answer होती है।\n\n**मुख्य बात:** यह तरीका अच्छा काम करता है क्योंकि हम दो सूची पर एक बार सॉर्टिंग करते हैं और उस बाद से हम साधारण तरीके से कोड लिख सकते हैं।\n\n**जटिलता:**\nTime: O(n log n) - क्योंकि सॉर्टिंग एक logararithmic time complexity का है और space complexity n + space complexity for result which is space complexity. \nSpace: O(n) - क्योंकि हम दो सूची को एक और सूची में कॉपी करते हैं।",
+    "code_pattern": "**Primary Pattern:** Sorting\n**Why:** The solution sorts the combined array of two input arrays and then calculates the median based on the length of the array, showcasing the sorting pattern.\n**Secondary Patterns:** None\n**Similar Problems:** 1. 88. Merge Sorted Array, 147. Insertion Sort List\n**When to use this pattern:** When you are dealing with arrays that need to be manipulated based on their sorted order, sorting can be an efficient approach to solve the problem.",
+    "created_at": "2026-05-21 05:00:56.008157+00:00"
+  },
+  {
+    "id": 5,
+    "leetcode_id": 5,
+    "title": "Longest Palindromic Substring",
+    "slug": "longest-palindromic-substring",
+    "category": "string",
+    "difficulty": "medium",
+    "description": "Given a string s, return the longest palindromic substring in s.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"babad\"\r\nOutput: \"bab\"\r\nExplanation: \"aba\" is also a valid answer.\r\nExample 2:\r\n\r\nInput: s = \"cbbd\"\r\nOutput: \"bb\"\r\n \r\n\r\nConstraints:\r\n\r\n1 <= s.length <= 1000\r\ns consist of only digits and English letters.",
+    "solution_code": "class Solution:\r\n    def longestPalindrome(self, s: str) -> str:\r\n\r\n        # Function to expand around center\r\n        def expand_from_center(left_index, right_index):\r\n\r\n            while (\r\n                left_index >= 0\r\n                and right_index < len(s)\r\n                and s[left_index] == s[right_index]\r\n            ):\r\n\r\n                left_index -= 1\r\n                right_index += 1\r\n\r\n            # Return valid palindrome\r\n            return s[left_index + 1 : right_index]\r\n\r\n        all_palindromes = []\r\n\r\n        # Check odd length palindromes\r\n        for center in range(len(s)):\r\n            palindrome = expand_from_center(center, center)\r\n            all_palindromes.append(palindrome)\r\n\r\n        # Check even length palindromes\r\n        for center in range(len(s) - 1):\r\n\r\n            if s[center] == s[center + 1]:\r\n\r\n                palindrome = expand_from_center(center, center + 1)\r\n\r\n                all_palindromes.append(palindrome)\r\n\r\n        # Return longest palindrome\r\n        return max(all_palindromes, key=len)",
+    "test_cases": [
+      {
+        "args": [
+          "babad"
+        ],
+        "expected": "bab"
+      },
+      {
+        "args": [
+          "cbbd"
+        ],
+        "expected": "bb"
+      },
+      {
+        "args": [
+          "a"
+        ],
+        "expected": "a"
+      },
+      {
+        "args": [
+          "ac"
+        ],
+        "expected": "a"
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses a helper function to expand around the center of a potential palindrome, and it checks both odd and even length palindromes to find the longest one.\n\n**Steps:**\n1. It first defines a helper function `expand_from_center` that takes two indices, `left_index` and `right_index`, and expands outwards as long as the characters at these indices are equal.\n2. It then initializes an empty list `all_palindromes` to store all possible palindromes found in the string.\n3. To find odd length palindromes, it iterates through each character in the string and treats it as the center of a potential palindrome. It calls `expand_from_center` with `left_index` and `right_index` both equal to the current center, and appends the resulting palindrome to `all_palindromes`.\n4. To find even length palindromes, it iterates through each pair of adjacent characters in the string (i.e., `s[center]` and `s[center + 1]`) and checks if they are equal. If they are, it calls `expand_from_center` with `left_index` equal to `center` and `right_index` equal to `center + 1`, and appends the resulting palindrome to `all_palindromes`.\n5. Finally, it returns the longest palindrome found by taking the maximum of all palindromes in `all_palindromes` based on their lengths.\n\n**Key insight:** The key insight here is that for any potential palindrome, its center can either be a single character (for odd length palindromes) or a pair of adjacent characters (for even length palindromes).\n\n**Complexity:** Time: O(n^2) | Space: O(n) where n is the length of the input string.",
+    "code_explanation_hi": "**तरीका:**\nलंबी पलड्रोमिक श्रृंखला के लिए सर्वश्रेष्ठ दीर्घतम की खोज करने का तरीका।\n\n**चरण:**\n1. हम एक कार्य को परिभाषित करते हैं जो श्रृंखला को दो अंशों में विभाजित करके पलड्रोमिक को पेंद करेगा, जिससे सेव्य शेष को विस्तृत करने के लिए।\n2. सिस्टम को चारों ओर गोलाकार सेंटर पर श्रृंखला के जोड़े का विस्तार करना होगा।\n3. हम सिस्टम को अनियमित केंद्रों के अनुसार दोनों तरह के पिलाडोमिक्स के लिए जांचना होगा। सिस्टम को केंद्रों के लिए जांच करते हैं और विस्तारित करेगा।\n4. हम पिलडोमिक्स का एक सूची बनाना। \n5. हमें सबसे लंबी पिलडोमिक्स वापस मिलेगा।\n\n**मुख्य बात:**\nप्रमुख विचार यह है वाक्य में गोलाकार केंद्रों से लागू करें और उस केंद्र से दो स्ट्रिंग्स का विस्तारित करे जो जोड़ा जा सकता है।\n\n**जटिलता:**\nTime: O(n^2) | Space: O(n)",
+    "code_pattern": "**Primary Pattern:** Two Pointers\n**Why:** This pattern fits because it uses two pointers to expand from the center of potential palindromes.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** \"Closest Pair II\", \"Subarray Product Greater Than K\", \"Minimum Window Substring\"\n\n**When to use this pattern:** Use the Two Pointers pattern when you need to traverse a string or sequence in both directions, typically from a central point like the start, end, or midpoint.",
+    "created_at": "2026-05-22 07:07:26.424695+00:00"
+  },
+  {
+    "id": 6,
+    "leetcode_id": 6,
+    "title": "Zigzag Conversion",
+    "slug": "zigzag-conversion",
+    "category": "string",
+    "difficulty": "medium",
+    "description": "The string \"PAYPALISHIRING\" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)\r\n\r\nP   A   H   N\r\nA P L S I I G\r\nY   I   R\r\nAnd then read line by line: \"PAHNAPLSIIGYIR\"\r\n\r\nWrite the code that will take a string and make this conversion given a number of rows:\r\n\r\nstring convert(string s, int numRows);\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"PAYPALISHIRING\", numRows = 3\r\nOutput: \"PAHNAPLSIIGYIR\"\r\nExample 2:\r\n\r\nInput: s = \"PAYPALISHIRING\", numRows = 4\r\nOutput: \"PINALSIGYAHRPI\"\r\nExplanation:\r\nP     I    N\r\nA   L S  I G\r\nY A   H R\r\nP     I\r\nExample 3:\r\n\r\nInput: s = \"A\", numRows = 1\r\nOutput: \"A\"\r\n \r\n\r\nConstraints:\r\n\r\n1 <= s.length <= 1000\r\ns consists of English letters (lower-case and upper-case), ',' and '.'.\r\n1 <= numRows <= 1000",
+    "solution_code": "class Solution:\r\n    def convert(self, s, numRows):\r\n        if numRows == 1 or numRows >= len(s): return s\r\n        row, direction, res = 0, -1, [\"\"] * numRows\r\n        for char in s:\r\n            res[row] += char\r\n            if row == 0 or row == numRows - 1: direction *= -1 \r\n            row += direction\r\n        return \"\".join(res)",
+    "test_cases": [
+      {
+        "args": [
+          "PAYPALISHIRING",
+          3
+        ],
+        "expected": "PAHNAPLSIIGYIR"
+      },
+      {
+        "args": [
+          "PAYPALISHIRING",
+          4
+        ],
+        "expected": "PINALSIGYAHRPI"
+      },
+      {
+        "args": [
+          "A",
+          1
+        ],
+        "expected": "A"
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses a dynamic approach to simulate the zigzag conversion by treating it as a row-by-row movement.\n\n**Steps:**\n1. First, it checks if the number of rows (`numRows`) is either 1 or greater than or equal to the length of the string (`len(s)`). If true, it returns the original string since no conversion is needed.\n2. It initializes the variables: `row` (current row index), `direction` (direction of movement, initially -1 for down), and `res` (result vector with `numRows` empty strings).\n3. The solution then iterates over each character in the input string `s`. For each character, it adds the character to the current row (`res[row] += char`) and updates the `row` index based on the `direction` (down if `direction` is -1, up if `direction` is 1).\n4. If the current `row` is on the first or last row, it changes the `direction` to the opposite direction to simulate the zigzag movement.\n5. Finally, it joins the result vector (`res`) into a single string and returns it.\n\n**Key insight:** The algorithm efficiently handles the movement between rows by dynamically updating the `row` index and `direction` variables.\n\n**Complexity:** Time: O(n) | Space: O(n), where n is the length of the input string `s`.",
+    "code_explanation_hi": "**तरीका:**\nज़ीगजैग कॉनवर्जन (Zigzag Conversion) का समाधान प्रदान करना है जहाँ आप एक एकल शब्द (string) में दोहरी निर्देश (instructions) द्वारा मूल्यांकन करेंगे।\n\n**चरण:**\n1. **पहला चरण:** जाँच कीजिए कि हमारी विराम संख्या (numRows) एक (1) है या फिर शब्द (string) की लंबाई से अधिक (numRows >= len(s)) है यदि हाँ तो हम शब्द की प्राप्ति कर सकते हैं (return s)।\n2. **सेकंड स्टेप:** एक वार्तालाप (row) की संख्या (0), दिशा (-1) और परिणाम का पैटर्न (res) निश्छल करें जिसमें संख्या को पंक्ति के प्रत्येक अंगों पर विस्तारित करने के लिए शब्द (string) का प्रक्षेपण होता है।\n3. **ट्रीडेड्रेस:** शब्द (string) की प्रत्येक अक्षर विशेषता जोड़ता और सूची के विराम (row) को प्राप्त करने के लिए दिशा (direction) को बदलता रहें जो चारों ओर से क्षैतिज, प्रगट क्षेत्र है। \n**मुख्य बात:** यह कोड अक्षरों को विरामों (rows) में वितरित प्रक्रिया द्वार",
+    "code_pattern": "**Primary Pattern:** Monotonic Stack\n**Why:** The given code utilizes a monotonic stack to traverse the string `s` in a zigzag pattern, ensuring row indices only increase or decrease monotonically.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** ZigZag Conversion (this problem itself), Longest Valid Parentheses, Valid Mountain Array\n\n**When to use this pattern:** Apply a monotonic stack when traversing data structures with a specific order (like strings, arrays, or trees) requires maintaining a consistent direction, such as increasing or decreasing indices.",
+    "created_at": "2026-05-22 08:45:54.863395+00:00"
+  },
+  {
+    "id": 7,
+    "leetcode_id": 7,
+    "title": "Reverse Integer",
+    "slug": "reverse-integer",
+    "category": "array",
+    "difficulty": "medium",
+    "description": "Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-231, 231 - 1], then return 0.\r\n\r\nAssume the environment does not allow you to store 64-bit integers (signed or unsigned).\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: x = 123\r\nOutput: 321\r\nExample 2:\r\n\r\nInput: x = -123\r\nOutput: -321\r\nExample 3:\r\n\r\nInput: x = 120\r\nOutput: 21\r\n \r\n\r\nConstraints:\r\n\r\n-231 <= x <= 231 - 1",
+    "solution_code": "class Solution:\r\n    def reverse(self, x):\r\n        x = int(str(x)[::-1]) if x >= 0 else int(\"-\" + str(x)[::-1][:-1]); return -2 ** 31 <= x <= 2 ** 31 - 1 and x or 0",
+    "test_cases": [
+      {
+        "args": [
+          123
+        ],
+        "expected": 321
+      },
+      {
+        "args": [
+          -123
+        ],
+        "expected": -321
+      },
+      {
+        "args": [
+          120
+        ],
+        "expected": 21
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses string reversal and integer conversion to reverse a given integer while handling overflows.\n\n**Steps:**\n\n1. First, the solution checks if the given integer `x` is non-negative (`x >= 0`). If it is, the code converts `x` to a string, reverses it using string slicing (`[::-1]`), and then converts it back to an integer using `int()`. For negative integers, it removes the negative sign, reverses the string, and then re-adds the negative sign by prepending a `-` character.\n2. The reversed integer is then compared to the minimum and maximum 32-bit integer values (`-2 ** 31` and `2 ** 31 - 1`) to check for overflows. If the reversed integer is within these bounds, it is returned; otherwise, the function returns 0.\n\n**Key insight:** The solution uses string reversal to convert the integer without manually looping over its digits.\n\n**Complexity:** Time: O(log(x)) | Space: O(log(x))\nThe time complexity is logarithmic based on the number of digits in the integer, and the space complexity is also logarithmic due to the string used for reversal.",
+    "code_explanation_hi": "**तरीका:**\n\nअर्धवटांबका नंबर को reversal करने का तरीका सीखेंगे। हम एक साधारण सी चीज़ करेंगे लेकिन थोड़ी रचनात्मकता लगेगी।\n\n**चरण:**\n\n1. सबसे पहले हम नंबर को स्ट्रिंग में बदलें (इसलिए 1234 हो जाएगा \"1234\")।\n2. अब इस स्ट्रिंग को बैकवर्ड करने के लिए `[::-1]` तरीका का इस्तेमाल करें जो कि हिंदी में उल्टा करने का एक छोटा सा तरीका है। \n3. ध्यान दें कि अगर नंबर से पहले चिन्ह (-) आ रहा है, तो हम उसका स्ट्रिंग में परिवर्तन करेंगे। \n4. हां, अब मूल्य को पुनर्स्थापित करने के लिए स्ट्रिंग आ गए, अब बस int() करनी है। \n5. एक आखिरी बार, हम इसे -2 **31 <= x <= 2 **31 - 1 और x के बराबर देखेंगे, अगर सही है, तो सही, नहीं तो 0।\n\n**मुख्य बात:** यह तरीका इसलिए काम करता है है क्योंकि नंबर को बिना प्रभावित हुए उल्टा करना मुश्किल है, लेकिन स्ट्रिंग में बदल देना और फिर उल्टा करना आसान है।\n\n**जटिलता:** Time: O(...) O (लेन",
+    "code_pattern": "**Primary Pattern:** String Manipulation, Convert to Integers, Integer Operations\n**Why:** This pattern fits as the solution first converts an integer to a string, reverses the string, and then converts it back to an integer, while handling edge cases for negative numbers and integer overflow.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** Reverse String, Palindrome Number, Convert Integer to Roman Numeral, etc.\n\n**When to use this pattern:** Use when you need to perform arithmetic operations on strings, or convert between string representations of integers and actual integers, while considering potential edge cases such as sign and overflow.",
+    "created_at": "2026-05-22 08:54:42.842894+00:00"
+  },
+  {
+    "id": 8,
+    "leetcode_id": 8,
+    "title": "String to Integer (atoi)",
+    "slug": "string-to-integer-atoi",
+    "category": "string",
+    "difficulty": "medium",
+    "description": "Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer.\r\n\r\nThe algorithm for myAtoi(string s) is as follows:\r\n\r\nWhitespace: Ignore any leading whitespace (\" \").\r\nSignedness: Determine the sign by checking if the next character is '-' or '+', assuming positivity if neither present.\r\nConversion: Read the integer by skipping leading zeros until a non-digit character is encountered or the end of the string is reached. If no digits were read, then the result is 0.\r\nRounding: If the integer is out of the 32-bit signed integer range [-231, 231 - 1], then round the integer to remain in the range. Specifically, integers less than -231 should be rounded to -231, and integers greater than 231 - 1 should be rounded to 231 - 1.\r\nReturn the integer as the final result.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"42\"\r\n\r\nOutput: 42\r\n\r\nExplanation:\r\n\r\nThe underlined characters are what is read in and the caret is the current reader position.\r\nStep 1: \"42\" (no characters read because there is no leading whitespace)\r\n         ^\r\nStep 2: \"42\" (no characters read because there is neither a '-' nor '+')\r\n         ^\r\nStep 3: \"42\" (\"42\" is read in)\r\n           ^\r\nExample 2:\r\n\r\nInput: s = \" -042\"\r\n\r\nOutput: -42\r\n\r\nExplanation:\r\n\r\nStep 1: \"   -042\" (leading whitespace is read and ignored)\r\n            ^\r\nStep 2: \"   -042\" ('-' is read, so the result should be negative)\r\n             ^\r\nStep 3: \"   -042\" (\"042\" is read in, leading zeros ignored in the result)\r\n               ^\r\nExample 3:\r\n\r\nInput: s = \"1337c0d3\"\r\n\r\nOutput: 1337\r\n\r\nExplanation:\r\n\r\nStep 1: \"1337c0d3\" (no characters read because there is no leading whitespace)\r\n         ^\r\nStep 2: \"1337c0d3\" (no characters read because there is neither a '-' nor '+')\r\n         ^\r\nStep 3: \"1337c0d3\" (\"1337\" is read in; reading stops because the next character is a non-digit)\r\n             ^\r\nExample 4:\r\n\r\nInput: s = \"0-1\"\r\n\r\nOutput: 0\r\n\r\nExplanation:\r\n\r\nStep 1: \"0-1\" (no characters read because there is no leading whitespace)\r\n         ^\r\nStep 2: \"0-1\" (no characters read because there is neither a '-' nor '+')\r\n         ^\r\nStep 3: \"0-1\" (\"0\" is read in; reading stops because the next character is a non-digit)\r\n          ^\r\nExample 5:\r\n\r\nInput: s = \"words and 987\"\r\n\r\nOutput: 0\r\n\r\nExplanation:\r\n\r\nReading stops at the first non-digit character 'w'.",
+    "solution_code": "class Solution:\r\n    def myAtoi(self, str):\r\n        r = [int(c) for c in re.findall(r\"^[-+]?\\u005Cd+\", str.lstrip())]\r\n        return (r and 2 ** 31 - 1 < r[0] and 2 ** 31 - 1) or (r and r[0] < -2 ** 31 and -2 ** 31) or (r and r[0]) or 0",
+    "test_cases": [
+      {
+        "args": [
+          "42"
+        ],
+        "expected": 42
+      },
+      {
+        "args": [
+          "   -042"
+        ],
+        "expected": -42
+      },
+      {
+        "args": [
+          "1337c0d3"
+        ],
+        "expected": 1337
+      },
+      {
+        "args": [
+          "0-1"
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          "words and 987"
+        ],
+        "expected": 0
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses regular expressions to extract a valid integer from the input string and then applies integer range checking.\n\n**Steps:**\n\n1. The solution uses the `re.findall` function to find all sequences of one or more digits at the beginning of the string, while ignoring any non-digit characters. \n   - `^` matches the start of the string.\n   - `[-+]?` matches an optional plus or minus sign.\n   - `\\u005Cd+` matches one or more digits. The digit code `\\u005C` is actually the backslash escape character, but when used with `u` it is used to represent any character.\n   - `str.lstrip()` removes any leading whitespace from the input string.\n\n2. The extracted sequence is converted into a list of integers using a list comprehension.\n\n3. The solution then performs an integer range check on the extracted number and returns either the converted integer, the maximum or minimum integer value that can be represented by a 32-bit signed integer, or 0.\n\n**Key insight:** This solution uses regular expressions to extract the integer pattern from the input string, which simplifies the parsing process.\n\n**Complexity:** Time: O(n) | Space: O(n) where n is the length of the input string.",
+    "code_explanation_hi": "**टरीका:**\nवाक्य में संख्या को बुल्गारियाई कसौटी पर परिवर्तित करना। इसे करने के लिए, हम पहले वाक्य से वाक्यांश को साफ़ करके कोई भी जोखिम क्षेत्र को हटाते हैं।\n\n**चरण:**\n\n1. **सफाई:** लेबल से सभी गैर-शब्द प्रकार की जानकारी को हटा दें - `str.lstrip()`.\n2. **संख्या चुनें:** `re.findall()` नियम का उपयोग करके शुरुआत से एक अंक पात्र और नेतृत्व करने वाली संख्या वैकल्पिक पात्र ढूंढें - `[-+]?\\u005Cd+`.\n3. **प्रमुख अंक का परीक्षण:** सूची `r` में एक अंक है। अगर है तो उस मुख्य अंक (मान `r[0]`) का पता चलता है कि यह एक दशमलव संख्या के रूप में परिभाषित किया जा सकता है। \n\n**मुख्य बात:**\nयह टिप्पणी यह बताता है कि कोड क्यों काम करता है।\nअर्थात, यह बुल्गारियाई कसौटी पर परिवर्तित करने के लिए मुख्य अंक का परीक्षण करता है।\n\n**जटिलता:**\nTime: O(n) | Space: O(n) \n\n(ध्यान दें: इस कोड का उपयोग करते समय संपूर्ण स",
+    "code_pattern": "**Primary Pattern:** Greedy\n**Why:** The solution uses a greedy approach by quickly identifying the integer part of the string, without considering the overall result's sign or overflow, which is then refined to adhere to the atoi rules.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** \"String to Integer (atoi)\", \"Integer to Roman\", \"Roman to Integer\"\n\n**When to use this pattern:** When you need to quickly extract essential information from a string without considering the overall result's constraints, use the Greedy pattern.",
+    "created_at": "2026-05-22 09:17:07.356486+00:00"
+  },
+  {
+    "id": 9,
+    "leetcode_id": 9,
+    "title": "Palindrome Number",
+    "slug": "palindrome-number",
+    "category": "number",
+    "difficulty": "easy",
+    "description": "Given an integer x, return true if x is a palindrome, and false otherwise.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: x = 121\r\nOutput: true\r\nExplanation: 121 reads as 121 from left to right and from right to left.\r\nExample 2:\r\n\r\nInput: x = -121\r\nOutput: false\r\nExplanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\r\nExample 3:\r\n\r\nInput: x = 10\r\nOutput: false\r\nExplanation: Reads 01 from right to left. Therefore it is not a palindrome.\r\n \r\n\r\nConstraints:\r\n\r\n-231 <= x <= 231 - 1",
+    "solution_code": "class Solution:\r\n    def isPalindrome(self, x):\r\n        return str(x) == str(x)[::-1]",
+    "test_cases": [
+      {
+        "args": [
+          121
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          -121
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          10
+        ],
+        "expected": false
+      }
+    ],
+    "code_explanation": "**Approach:** This solution checks if a given number is a palindrome by converting it into a string and comparing it with its reverse.\n\n**Steps:**\n\n1. Convert the input number `x` into a string using `str(x)`. This is because strings are easy to reverse, unlike integers.\n2. Use slicing (`str(x)[::-1]`) to get the reverse of the string. The syntax `[::-1]` means \"start at the end of the string and end at position 0, move with the step -1\" which reverses the string.\n3. Compare the original string with its reverse using `==`. If they are the same, then the number is a palindrome.\n\n**Key insight:** The key insight here is that converting the number into a string allows us to easily reverse it using slicing, and then we can compare the original and reversed strings.\n\n**Complexity:** Time: O(n) | Space: O(n), where n is the number of digits in the input number (`x`). This is because converting the number into a string requires O(n) time, and storing the reversed string also requires O(n) space.",
+    "code_explanation_hi": "**तरीका:** यह समाधान एक गणितीय संख्या का पलिंड्रम परीक्षण करता है।\n\n**चरण:**\n1. नंबर को स्ट्रिंग में बदलें (जैसे 123 -> \"123\")\n2. इस स्ट्रिंग को पलिंड्रम तरीके से पढ़ें (जैसे \"123\" -> \"321\")\n3. यदि दोनों ही तरीकों से स्ट्रिंग एक समान है तो वह पलिंड्रम नंबर है\n\n**मुख्य बात:** इसकाम करता है क्योंकि हमें संख्याएँ पढ़ने का कोई खास तरीके की जरूरत नहीं है, जैसे पढ़ने में नंबर की दिशा ज्यादा मायने नहीं रखती है। हमें सिर्फ स्ट्रिंग में देखना है कि ये कैसे पढ़ा जाता है!\n\n**जटिलता:** Time: O(n) | Space: O(n) (जहां n नंबर की संख्या (डिजिट्स) होगी)",
+    "code_pattern": "**Primary Pattern:** String Reverse, Single Pattern\n**Why:** The solution directly converts the integer to a string and checks for equality with its reverse, exhibiting a pattern of reversing a string for palindrome checks.\n**Secondary Patterns:** None\n**Similar Problems:** 125. Valid Palindrome, 647. Palindromic Substrings\n**When to use this pattern:** When checking for palindrome values in strings, convert the values to strings and compare them with their reverse for efficiency.",
+    "created_at": "2026-05-22 10:11:59.504727+00:00"
+  },
+  {
+    "id": 10,
+    "leetcode_id": 10,
+    "title": "Regular Expression Matching",
+    "slug": "regular-expression-matching",
+    "category": "string",
+    "difficulty": "hard",
+    "description": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where:\r\n\r\n'.' Matches any single character.​​​​\r\n'*' Matches zero or more of the preceding element.\r\nReturn a boolean indicating whether the matching covers the entire input string (not partial).\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"aa\", p = \"a\"\r\nOutput: false\r\nExplanation: \"a\" does not match the entire string \"aa\".\r\nExample 2:\r\n\r\nInput: s = \"aa\", p = \"a*\"\r\nOutput: true\r\nExplanation: '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\".\r\nExample 3:\r\n\r\nInput: s = \"ab\", p = \".*\"\r\nOutput: true\r\nExplanation: \".*\" means \"zero or more (*) of any character (.)\".",
+    "solution_code": "class Solution:\r\n    def isMatch(self, s, p):\r\n        return bool(re.match(r\"%s\" %p, s)) and re.match(r\"%s\" %p, s).group(0) == s",
+    "test_cases": [
+      {
+        "args": [
+          "aa",
+          "a"
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          "aa",
+          "a*"
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          "ab",
+          ".*"
+        ],
+        "expected": true
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses the built-in Python library `re` to match a regular expression against a string, and checks if the entire string matches the pattern.\n\n**Steps:**\n\n1. The `re.match` function is used to check if the string `s` matches the regular expression pattern `p`. The pattern is passed as a string by using the `%s` placeholder and concatenating the string with the pattern using `\"%s\" %p`. This creates a pattern that includes every character in `p`, effectively allowing `p` to match itself.\n2. The `bool` function is used to convert the match object to a boolean value, where `True` means the string matched the pattern and `False` otherwise.\n3. The solution also checks if the matched string (obtained using `.group(0)`) is equal to the original string `s`. If the matched string is not equal to `s`, it means that even though the regular expression matched, it matched a subset of `s`, not the entire string.\n\n**Key insight:** This solution is oversimplified and is not actually a correct implementation of the regular expression matching problem. It's intended to use `isMatch` from the `re` library but it actually calls `match` which differs from `isMatch`.",
+    "code_explanation_hi": "**तरीका:** यह समाधान Regex मैचिंग को आसान बनाने के लिए है। regex में मैचिंग करने के लिए एक विशेष कोड का उपयोग किया जाता है। हमें केवल इस कोड को सुनिश्चित होना है कि यह वाक्य s को मैच करता है या नहीं।\n\n**चरण:**\n1. regex में `re.match` का उपयोग किया जाता है जो स्ट्रिंग में regex का मैच करता है। \n2. regex पैटर्न को string p पर `%s` के साथ जोड़ते हैं जिससे पूरा regex पैटर्न बन जाता है।\n3. अगर Regex पूरा वाक्य s को मैच करता है और उसका ग्रुप 0 वाक्य s के समान है तो यह True लौटाता है।\n\n**मुख्य बात:** यह तरीका regex मैचिंग को समझने में आसान बनाता है और पूरे प्रोग्राम के लिए ज्यादा कोड लिखने की जरूरत नहीं होती है।\n\n**जटिलता:** Time: O(n*m) | Space: O(m) नोट: यह तरीका regex के बारे में बहुत कुछ नहीं जानता। यह regex मैचिंग पर बहुत काम नहीं करता।",
+    "code_pattern": "**Primary Pattern:** Regular Expression\n**Why:** This solution uses the built-in Python `re` module to match the input string `s` against the regular expression pattern `p`.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** 44. Wildcard Matching, 47. Substring with Concatenation of All Words, 520. Detect Capital\n\n**When to use this pattern:** When the problem involves matching a string or pattern against a set of predefined rules or patterns, consider using a regular expression solution.",
+    "created_at": "2026-05-23 09:38:54.042740+00:00"
+  },
+  {
+    "id": 11,
+    "leetcode_id": 11,
+    "title": "Container With Most water",
+    "slug": "container-with-most-water",
+    "category": "array",
+    "difficulty": "medium",
+    "description": "You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).\r\n\r\nFind two lines that together with the x-axis form a container, such that the container contains the most water.\r\n\r\nReturn the maximum amount of water a container can store.\r\n\r\nNotice that you may not slant the container.\r\n\r\n \r\n\r\nExample 1:\r\n\r\n\r\nInput: height = [1,8,6,2,5,4,8,3,7]\r\nOutput: 49\r\nExplanation: The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49.\r\nExample 2:\r\n\r\nInput: height = [1,1]\r\nOutput: 1\r\n \r\n\r\nConstraints:\r\n\r\nn == height.length\r\n2 <= n <= 105\r\n0 <= height[i] <= 104",
+    "solution_code": "class Solution:\r\n    def maxArea(self, height):\r\n        left, right, mx = 0, len(height) - 1, 0\r\n        while left < right:\r\n            mx = max(mx, (right - left) * min(height[left], height[right]))\r\n            if height[left] < height[right]: \r\n                left += 1\r\n            else: \r\n                right -= 1\r\n        return mx",
+    "test_cases": [
+      {
+        "args": [
+          [
+            1,
+            8,
+            6,
+            2,
+            5,
+            4,
+            8,
+            3,
+            7
+          ]
+        ],
+        "expected": 49
+      },
+      {
+        "args": [
+          [
+            1,
+            1
+          ]
+        ],
+        "expected": 1
+      }
+    ],
+    "code_explanation": "**Approach:** This solution uses a two-pointer technique to find the maximum area that can be contained by a given list of heights of containers.\n\n**Steps:**\n\n1. Initialize two pointers, `left` and `right`, starting from the beginning and end of the list, respectively. Also initialize `mx`, the maximum area found so far, to 0.\n2. While `left` is less than `right`, calculate the area between the two containers by multiplying the difference between the pointers (`right - left`) by the minimum height of the two containers (`min(height[left], height[right])`). Update `mx` if the new area is greater.\n3. Move the pointer corresponding to the shorter container closer to the other pointer. This is because the area is multiplied by the height of the shorter container, so increasing its height will give a larger area.\n4. Repeat steps 2-3 until `left` is no longer less than `right`.\n5. Return the maximum area found (`mx`).\n\n**Key insight:** By moving the pointer corresponding to the shorter container, we effectively prioritize increasing the area, which will grow until the shorter container's height can no longer contribute to a larger area.\n\n**Complexity:** Time: O(n) | Space: O(1)",
+    "code_explanation_hi": "**तरीका:**\nइस समस्या का समाधान एक लूप के माध्यम से करें जो दो इंडेक्स के बीच जाता है।\n\n**चरण:**\n\n1. हम दो इंडेक्स लेते हैं: left और right। left 0 पर स्टार्ट करता है और right सूची के अंत तक जाता है।\n2. लूप में हम सबसे बड़ी क्षेत्रफल का मूल्य को संग्रहीत करते हैं।\n3. हम इंडेक्स left और right के माइनस को लेते हैं और उनके बीच छोटी ऊंचाई (या दोनों) को गुणा करके सबसे बड़ी क्षेत्रफल की तुलना में मूल्य को जाँचते हैं।\n4. यदि left की ऊंचाई right की ऊंचाई से कम है, तो हम left को 1 बढ़ाते हैं (क्योंकि left की ऊंचाई बढ़ाने से भी क्षेत्रफल बढ़ सकता है)।\n5. यदि right की ऊंचाई left की ऊंचाई से कम है, तो हम right को 1 घटाते हैं (क्योंकि right की ऊंचाई कम होने से भी क्षेत्रफल बढ़ सकता है)।\n\n**मुख्य बात:** यह तरीका काम करता है क्योंकि हम सबसे बड़ी क्षेत्रफल की तुलना करते हुए इंडेक्स को बढ़ाते या घटाते हैं",
+    "code_pattern": "**Primary Pattern:** Two Pointers\n**Why:** This pattern fits because it uses two pointers to traverse the array, one starting from the beginning and one from the end, effectively narrowing down the search space with each iteration.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** Container With Most Water II, Container With Most Water, 42. Trapping Rain Water\n\n**When to use this pattern:** Use the Two Pointers pattern to solve problems that require finding a relationship between the start and end of a sequence or array, such as maximum or minimum values within a bounded range.",
+    "created_at": "2026-05-26 04:53:02.949070+00:00"
+  },
+  {
+    "id": 12,
+    "leetcode_id": 12,
+    "title": "Integer To Roman",
+    "slug": "integer-to-roman",
+    "category": "string",
+    "difficulty": "medium",
+    "description": "Seven different symbols represent Roman numerals with the following values:\r\n\r\nSymbol\tValue\r\nI\t1\r\nV\t5\r\nX\t10\r\nL\t50\r\nC\t100\r\nD\t500\r\nM\t1000\r\nRoman numerals are formed by appending the conversions of decimal place values from highest to lowest. Converting a decimal place value into a Roman numeral has the following rules:\r\n\r\nIf the value does not start with 4 or 9, select the symbol of the maximal value that can be subtracted from the input, append that symbol to the result, subtract its value, and convert the remainder to a Roman numeral.\r\nIf the value starts with 4 or 9 use the subtractive form representing one symbol subtracted from the following symbol, for example, 4 is 1 (I) less than 5 (V): IV and 9 is 1 (I) less than 10 (X): IX. Only the following subtractive forms are used: 4 (IV), 9 (IX), 40 (XL), 90 (XC), 400 (CD) and 900 (CM).\r\nOnly powers of 10 (I, X, C, M) can be appended consecutively at most 3 times to represent multiples of 10. You cannot append 5 (V), 50 (L), or 500 (D) multiple times. If you need to append a symbol 4 times use the subtractive form.\r\nGiven an integer, convert it to a Roman numeral.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: num = 3749\r\n\r\nOutput: \"MMMDCCXLIX\"\r\n\r\nExplanation:\r\n\r\n3000 = MMM as 1000 (M) + 1000 (M) + 1000 (M)\r\n 700 = DCC as 500 (D) + 100 (C) + 100 (C)\r\n  40 = XL as 10 (X) less of 50 (L)\r\n   9 = IX as 1 (I) less of 10 (X)\r\nNote: 49 is not 1 (I) less of 50 (L) because the conversion is based on decimal places\r\nExample 2:\r\n\r\nInput: num = 58\r\n\r\nOutput: \"LVIII\"\r\n\r\nExplanation:\r\n\r\n50 = L\r\n 8 = VIII\r\nExample 3:\r\n\r\nInput: num = 1994\r\n\r\nOutput: \"MCMXCIV\"\r\n\r\nExplanation:\r\n\r\n1000 = M\r\n 900 = CM\r\n  90 = XC\r\n   4 = IV\r\n \r\n\r\nConstraints:\r\n\r\n1 <= num <= 3999",
+    "solution_code": "class Solution:\r\n    def intToRoman(self, num):\r\n        s = \"M\" * (num // 1000)\r\n        s += \"CM\" if num % 1000 >= 900 else \"D\" *((num % 1000) // 500)\r\n        s += \"CD\" if num % 500 >= 400 and s[-2:] != \"CM\" else \"C\" * ((num % 500) // 100)  if num % 500 < 400 else \"\"\r\n        s += \"XC\" if num % 100 >= 90 else \"L\" * ((num % 100) // 50)\r\n        s += \"XL\" if num % 50 >= 40 and s[-2:] != \"XC\" else \"X\" * ((num % 50) // 10)  if num % 50 < 40 else \"\"\r\n        s += \"IX\" if num % 10 >= 9 else \"V\" * ((num % 10) // 5)\r\n        s += \"IV\" if num % 5 >= 4 and s[-2:] != \"IX\" else \"I\" * ((num % 5) // 1) if num % 5 < 4 else \"\"\r\n        return s",
+    "test_cases": [
+      {
+        "args": [
+          3749
+        ],
+        "expected": "MMMDCCXLIX"
+      },
+      {
+        "args": [
+          58
+        ],
+        "expected": "LVIII"
+      },
+      {
+        "args": [
+          1994
+        ],
+        "expected": "MCMXCIV"
+      }
+    ],
+    "code_explanation": "**Approach:** This LeetCode solution uses a greedy algorithm to convert integers to Roman numerals by repeatedly appending the largest possible Roman numeral value for the current place value.\n\n**Steps:**\n\n1. First, we create a string `s` that represents the thousands place value of the input number `num`. We do this by multiplying \"M\" by the integer division of `num` by 1000.\n2. Next, we append the remainder of `num` divided by 1000 to the string `s`. We check for the cases where the remainder is 900 (for 900-999) or 500 (for 500-899). If the remainder is greater than or equal to 900, we append \"CM\" to `s`. Otherwise, we append the remainder divided by 500 multiplied by \"D\".\n3. We repeat the same process for the hundreds, tens, and ones place values of `num`, checking for the largest possible Roman numeral value for each case and appending it to `s`.\n4. Finally, we return the string `s`, which represents the Roman numeral equivalent of the input number `num`.\n\n**Key insight:** By using a greedy approach, we can simplify the problem and make it easier to handle the different cases for each place value.\n\n**Complexity:** Time: O(4) | Space: O(n), where n is the number of characters in the input string. However, since the time complexity is constant and only depends on the number of digits in the input number, we can rewrite it as Time: O(1).",
+    "code_explanation_hi": "**तरीका:** नंबर को रोमन अक्षरों में बदलने के लिए एक तरीका है जैसे कि इस कोड ने दिखाया है।\n\n**चरण:**\n1. सबसे पहले, हमें 1000 से ज्यादा वाले नंबर का \"एम\" से गुणा करना है और फिर उन्हें स्ट्रिंग में जोड़ना है। फिर देखें कि 900 से ज्यादा है या नहीं, नहीं तो उसके बाद 500 से गुणा करने वाले स्ट्रिंग को जोड़ना है, जैसे \"डीसी\" या \"डी\"।\n2. 100 से ज्यादा वाले नंबर के लिए, वही प्रक्रिया करें जैसे कि \"सेंट्स\", \"कॉम\"।\n3. 50 से ज्यादा वाले नंबर के लिए वही प्रक्रिया करें जैसे कि \"ऐलेसेंड्री\", \"एक्सीडेंटली\".\n4. आखिर में, बाकी नंबर को \"V\" या \"वाई\" से गुणा करना है और स्ट्रिंग में जोड़ना।\n\n**मुख्य बात:** यह कोड काम करता है क्योंकि यह पूरी तरह से विशिष्ट नियमों के अनुसार काम करता है, और स्ट्रिंग को निर्मात के रूप में बनाता है ताकि उसे निर्मात में जोड़ा ज",
+    "code_pattern": "**Primary Pattern:** Greedy\n**Why:** The solution uses a greedy approach by selecting the largest possible Roman numeral for a given integer value and subtracting it, repeating this process until the number is reduced to 0.\n\n**Secondary Patterns:** None\n\n**Similar Problems:** 12. Integer To Roman, 166. Fraction To Roman, 17. Letter Combinations of a Phone Number\n\n**When to use this pattern:** Use the Greedy pattern when you're dealing with a problem where you have multiple choices at each step, and you can make locally optimal choices that lead to a globally optimal solution.",
+    "created_at": "2026-05-26 04:55:40.557884+00:00"
+  },
+  {
+    "id": 13,
+    "leetcode_id": 13,
+    "title": "Roman To Integer",
+    "slug": "roman-to-integer",
+    "category": "hashtable",
+    "difficulty": "easy",
+    "description": "Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.\r\n\r\nSymbol       Value\r\nI             1\r\nV             5\r\nX             10\r\nL             50\r\nC             100\r\nD             500\r\nM             1000\r\nFor example, 2 is written as II in Roman numeral, just two ones added together. 12 is written as XII, which is simply X + II. The number 27 is written as XXVII, which is XX + V + II.\r\n\r\nRoman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:\r\n\r\nI can be placed before V (5) and X (10) to make 4 and 9. \r\nX can be placed before L (50) and C (100) to make 40 and 90. \r\nC can be placed before D (500) and M (1000) to make 400 and 900.\r\nGiven a roman numeral, convert it to an integer.\r\n\r\n \r\n\r\nExample 1:\r\n\r\nInput: s = \"III\"\r\nOutput: 3\r\nExplanation: III = 3.\r\nExample 2:\r\n\r\nInput: s = \"LVIII\"\r\nOutput: 58\r\nExplanation: L = 50, V= 5, III = 3.\r\nExample 3:\r\n\r\nInput: s = \"MCMXCIV\"\r\nOutput: 1994\r\nExplanation: M = 1000, CM = 900, XC = 90 and IV = 4.\r\n \r\n\r\nConstraints:\r\n\r\n1 <= s.length <= 15\r\ns contains only the characters ('I', 'V', 'X', 'L', 'C', 'D', 'M').\r\nIt is guaranteed that s is a valid roman numeral in the range [1, 3999].",
+    "solution_code": "class Solution:\r\n    def romanToInt(self, s):\r\n        table = {\"M\": 1000, \"D\": 500, \"C\": 100, \"L\": 50, \"X\": 10, \"V\": 5, \"I\": 1}\r\n        sm, pre = 0, 'I'\r\n        for c in s[::-1]: \r\n            if table[c] < table[pre]:\r\n                sm, pre = sm - table[c], c  \r\n            else:\r\n                sm, pre = sm + table[c], c\r\n        return sm",
+    "test_cases": [
+      {
+        "args": [
+          "III"
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          "LVIII"
+        ],
+        "expected": 58
+      },
+      {
+        "args": [
+          "MCMXCIV"
+        ],
+        "expected": 1994
+      }
+    ],
+    "code_explanation": "",
+    "code_explanation_hi": "",
+    "code_pattern": "",
+    "created_at": "2026-05-26 05:10:54.282490+00:00"
+  }
+]
