@@ -2266,7 +2266,7 @@ const patternCursor  = document.getElementById("pattern-cursor");
 const patternBadges  = document.getElementById("pattern-badges");
 const patternBodyWrap = document.getElementById("pattern-body-wrap");
 const patternToggleIcon = document.getElementById("pattern-toggle-icon");
-let patternExpanded  = true;
+let patternExpanded  = false;
 let patternCache     = "";
 
 function togglePattern() {
@@ -2377,9 +2377,7 @@ async function loadPattern() {
   exToggleIcon.classList.add("open");
   loadExplanation("en");
   loadPattern();
-// Open pattern card by default
-patternBodyWrap.classList.add("expanded");
-patternToggleIcon.classList.add("open");
+
 
   resetAll();
 
