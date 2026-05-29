@@ -162,18 +162,6 @@ html, body {
         <p style="padding:16px;font-size:12px;color:var(--txt3);">No problems yet.</p>
         {% endfor %}
     </div>
-    <div class="sidebar-stats">
-        <div class="stat-mini">
-            <div class="stat-n">{{ problems|length }}</div>
-            <div class="stat-l">Total</div>
-        </div>
-        <div class="stat-mini">
-            <div class="stat-n" style="color:var(--easy-color);">
-                {{ problems|dictsortreversed:"difficulty"|length }}
-            </div>
-            <div class="stat-l">Easy</div>
-        </div>
-    </div>
 </aside>
 
 <main class="main-content">
